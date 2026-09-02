@@ -2,11 +2,14 @@ model User {
     id                  String   @id @default(uuid())
     name                String
     email               String   @unique
-    password            String
+    password            String?
     role                Role     @default(CUSTOMER)
     needsPasswordChange Boolean  @default(false)
     createdAt           DateTime @default(now())
     updatedAt           DateTime @updatedAt
+
+    provider   AuthProvider @default(EMAIL)
+    profileImg          String?
 
     orders Order[]
 

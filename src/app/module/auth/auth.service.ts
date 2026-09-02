@@ -4,6 +4,7 @@ import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import {
   IForgotPasswordPayload,
+  IGoogleLoginPayload,
   ILoginUser,
   IRegisterUser,
   IRequestUser,
@@ -18,6 +19,88 @@ import path from "path";
 import { transporter } from "../../lib/nodemailer";
 import { jwtUtils } from "../../utils/jwt";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
+import { Role } from "../../../generated/prisma/enums";
+
+const googleClient = new OAuth2Client(
+  config.google_client_id,
+  config.google_client_secret,
+);
+
+const googleLogin = async (payload: IGoogleLoginPayload) => {
+  const { token } = payload;
+
+  const ticket = await googleClient.verifyIdToken({
+    idToken: token,
+    audience: config.google_client_id,
+  });
+
+  const googlePayload = ticket.getPayload();
+
+  if (!googlePayload || !googlePayload?.email_verified) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Google email not verified!");
+  }
+
+  const { email, name } = googlePayload;
+
+  let user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    const defaultPassword = crypto.randomBytes(16).toString("hex");
+    const hashedPassword = await bcrypt.hash(
+      defaultPassword,
+      Number(config.bcrypt_salt_rounds),
+    );
+
+    if (!email) {
+      throw new AppError(
+        httpStatus.UNAUTHORIZED,
+        "Google account email not found!",
+      );
+    }
+    user = await prisma.user.create({
+      data: {
+        email,
+        name: name || "Google User",
+        password: hashedPassword,
+        role: Role.CUSTOMER,
+        isEmailVerified: true,
+      },
+    });
+  } else {
+    if (user?.provider !== "GOOGLE") {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Please login with your email and password!",
+      );
+    }
+  }
+
+  const jwtPayload = {
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = jwtUtils.createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as SignOptions,
+  );
+
+  const refreshToken = jwtUtils.createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expires_in as SignOptions,
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
+};
 
 const registerUserIntoDB = async (payload: IRegisterUser) => {
   const { name, password, role } = payload;
@@ -78,12 +161,12 @@ const registerUserIntoDB = async (payload: IRegisterUser) => {
     "src/app/templates/registration-user-otp.ejs",
   );
 
-const html = await ejs.renderFile(templatePath, {
-  name,
-  email,
-  otp: otpValue,
-  expirationMinutes: expirationSeconds / 60,
-});
+  const html = await ejs.renderFile(templatePath, {
+    name,
+    email,
+    otp: otpValue,
+    expirationMinutes: expirationSeconds / 60,
+  });
 
   await transporter.sendMail({
     from: config.email_sender,
@@ -220,22 +303,20 @@ const loginUser = async (payload: ILoginUser) => {
   });
 
   if (!user) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid email or password!");
+  }
+
+  if (!user.password) {
     throw new AppError(
-      httpStatus.UNAUTHORIZED,
-      "Invalid email or password!",
+      httpStatus.BAD_REQUEST,
+      "This account does not have a password!",
     );
   }
 
-  const isPasswordMatched = await bcrypt.compare(
-    password,
-    user.password,
-  );
+  const isPasswordMatched = await bcrypt.compare(password, user.password);
 
   if (!isPasswordMatched) {
-    throw new AppError(
-      httpStatus.UNAUTHORIZED,
-      "Invalid email or password!",
-    );
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid email or password!");
   }
 
   const jwtPayload = {
@@ -362,7 +443,7 @@ const forgotPassword = async (payload: IForgotPasswordPayload) => {
 
   const templatePath = path.join(
     process.cwd(),
-    "src/app/templates/reset-password-success.ejs",
+    "src/app/templates/forgot-password.ejs",
   );
 
   const html = await ejs.renderFile(templatePath, {
@@ -394,10 +475,7 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
   });
 
   if (!isUserExist) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "User does not exist!",
-    );
+    throw new AppError(httpStatus.NOT_FOUND, "User does not exist!");
   }
 
   const key = `ioms-password-reset-otp:${email}`;
@@ -406,17 +484,11 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
 
   // Check Redis OTP, not key
   if (!redisOtp) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "OTP expired or not found.",
-    );
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP expired or not found.");
   }
 
   if (redisOtp !== otp) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "Invalid OTP!",
-    );
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid OTP!");
   }
 
   const hashedPassword = await bcrypt.hash(
@@ -453,14 +525,12 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
       html,
     });
   } catch (emailError) {
-    console.error(
-      "Failed to send password changed email:",
-      emailError,
-    );
+    console.error("Failed to send password changed email:", emailError);
   }
 };
 
 export const AuthService = {
+  googleLogin,
   registerUserIntoDB,
   verifyUserEmail,
   loginUser,
