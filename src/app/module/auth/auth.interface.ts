@@ -1,39 +1,36 @@
-import type { Role } from "../../../generated/prisma/browser";
+import { Role } from "../../../generated/prisma/enums";
 
-export interface ILoginUserPayload {
-	email: string;
-	password: string;
+export interface IRegisterUser {
+  name: string;
+  email: string;
+  role: Role;
+  password: string;
+  contactNumber?: string;
+  address?: string;
 }
 
-export interface IRegisterPatientPayload {
-	name: string;
-	email: string;
-	password: string;
-	patient: {
-		contactNumber?: string;
-	};
+export interface ILoginUser {
+  email: string;
+  password: string;
 }
+
 export interface IVerifyEmailPayload {
-	email: string;
-	otp: string;
+  email: string;
+  otp: string;
 }
 
 export interface IRequestUser {
-	userId: string;
-	email: string;
-	name: string;
-	role: Role;
-}
-
-export interface IGoogleLoginPayload {
-	idToken: string;
+  userId: string;
+  email: string;
+  role: Role;
 }
 
 export interface IForgotPasswordPayload {
-	email: string;
+  email: string;
 }
+
 export interface IResetPasswordPayload {
-	email: string;
-	newPassword: string;
-	otp: string;
+  email: string;
+  newPassword: string;
+  otp: string;
 }

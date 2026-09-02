@@ -1,0 +1,10 @@
+model Category {
+  id          String @id @default(uuid())
+  name        String
+  description String
+
+  // Relations
+  products Product[]
+
+  @@map("categories")
+}

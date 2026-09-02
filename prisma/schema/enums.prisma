@@ -1,0 +1,34 @@
+enum Role {
+  ADMIN
+  MANAGER
+  CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentGateway {
+  STRIPE
+  BKASH
+  SSLCOMMERZ
+  CASH_ON_DELIVERY
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}

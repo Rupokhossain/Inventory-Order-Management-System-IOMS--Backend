@@ -23,8 +23,8 @@ declare global {
 	}
 }
 
-// auth(Role.ADMIN, Role.USER, Role.Author)
-// auth() => ...requiredRoles => [Role.ADMIN, Role.USER, Role.AUTHOR]
+// auth(Role.ADMIN, Role.USER, Role.MANAGER)
+// auth() => ...requiredRoles => [Role.ADMIN, Role.USER, Role.MANAGER]
 export const auth = (...requiredRoles: Role[]) => {
 	return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 		const token = req.cookies.accessToken
@@ -68,12 +68,12 @@ export const auth = (...requiredRoles: Role[]) => {
 			throw new AppError(httpStatus.UNAUTHORIZED, "User not found. Please log in again.");
 		}
 
-		if (user.status === "BLOCKED") {
-			throw new AppError(
-				httpStatus.FORBIDDEN,
-				"Your account has been blocked. Please contact support.",
-			);
-		}
+		// if (user. === "BLOCKED") {
+		// 	throw new AppError(
+		// 		httpStatus.FORBIDDEN,
+		// 		"Your account has been blocked. Please contact support.",
+		// 	);
+		// }
 
 		req.user = {
 			email,
