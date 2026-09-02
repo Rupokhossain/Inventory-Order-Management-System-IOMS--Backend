@@ -32,3 +32,8 @@ enum UserStatus {
   BLOCKED
   DELETED
 }
+
+enum AuthProvider {
+  EMAIL    
+  GOOGLE 
+}
