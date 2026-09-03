@@ -4,6 +4,7 @@ model User {
     email               String   @unique
     password            String?
     role                Role     @default(CUSTOMER)
+    status              UserStatus @default(ACTIVE)
     needsPasswordChange Boolean  @default(false)
     createdAt           DateTime @default(now())
     updatedAt           DateTime @updatedAt
