@@ -5,11 +5,15 @@ model Order {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-  // Relations
   customerId String
-  customer   User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer   User @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
   orderItems OrderItem[]
   payment    Payment?
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
 
   @@map("orders")
 }

@@ -1,14 +1,16 @@
 model OrderItem {
-  id        String     @id @default(ulid())
+  id        String  @id @default(ulid())
   orderId   String
   productId String
-  quantity  String
-  unitPrice Decimal @db.Decimal(10, 2) 
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2)
 
-  // Relations
   order   Order   @relation(fields: [orderId], references: [id])
   product Product @relation(fields: [productId], references: [id])
 
-  @@unique([orderId, productId]) 
+  @@unique([orderId, productId])
+  @@index([orderId])
+  @@index([productId])
+
   @@map("order_items")
 }
