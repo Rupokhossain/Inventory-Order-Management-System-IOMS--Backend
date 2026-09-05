@@ -1,15 +1,16 @@
 model Payment {
-  id            String           @id @default(uuid())
-  orderId       String           @unique 
-  transactionId String        @unique 
-  paymentGateway String       
-  amount        Decimal       @db.Decimal(10, 2)
-  status        PaymentStatus @default(PENDING)
-     createdAt           DateTime @default(now())
-    updatedAt           DateTime @updatedAt
+  id             String         @id @default(uuid())
+  orderId        String         @unique
+  transactionId  String         @unique
+  paymentGateway PaymentGateway
+  amount         Decimal        @db.Decimal(10, 2)
+  status         PaymentStatus  @default(PENDING)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
-  // Relations
   order Order @relation(fields: [orderId], references: [id])
 
+  @@index([status])
+  @@index([paymentGateway])
   @@map("payments")
 }
