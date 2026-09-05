@@ -16,3 +16,12 @@ export interface IUpdateProductPayload {
 export interface IUpdateStockPayload {
   quantity: string | number;
 }
+
+
+export interface IProductQuery {
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  page?: string;
+  limit?: string;
+}

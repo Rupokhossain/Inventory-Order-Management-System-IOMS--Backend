@@ -16,3 +16,12 @@ export interface IChangePasswordPayload {
 export interface IUpdateUserStatusPayload {
   status: "ACTIVE" | "BLOCKED" | "DELETED";
 }
+
+
+export interface IUserQuery {
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  page?: string;
+  limit?: string;
+}

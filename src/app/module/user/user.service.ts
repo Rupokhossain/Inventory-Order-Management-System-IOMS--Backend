@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import { IChangePasswordPayload, IUpdateProfilePayload, IUpdateUserStatusPayload } from "./user.interface";
+import { IChangePasswordPayload, IUpdateProfilePayload, IUpdateUserStatusPayload, IUserQuery } from "./user.interface";
 import httpStatus from "http-status"
+import { UserWhereInput } from "../../../generated/prisma/models";
 
 
 const getMyProfile = async (userId: string) => {
@@ -75,8 +76,53 @@ if (payload.profileImg) updateData.profileImg = payload.profileImg;
 }
 
 
-const getAllUsers = async () => {
+const getAllUsers = async (query: IUserQuery) => {
+
+    const limit = query.limit ? Number(query.limit) : 10;
+
+  const page = query.page ? Number(query.page) : 1;
+
+  const skip = (page - 1) * limit;
+
+  const sortBy = query.sortBy ? query.sortBy : "createdAt";
+
+  const sortOrder = query.sortOrder ? query.sortOrder : "desc";
+
+  const andConditions: UserWhereInput[] = [];
+
+
+  if (query.search) {
+    andConditions.push({
+      OR: [
+        {
+          name: {
+            contains: query.search,
+            mode: "insensitive",
+          },
+        },
+        {
+          email: {
+            contains: query.search,
+            mode: "insensitive",
+          },
+        },
+      ],
+    });
+  }
+
     const users = await prisma.user.findMany({
+
+       where: {
+      AND: andConditions,
+    },
+
+    take: limit,
+    skip,
+
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+
     select: {
       id: true,
       name: true,
@@ -88,10 +134,7 @@ const getAllUsers = async () => {
       status: true,
       createdAt: true,
       updatedAt: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
+    }
   });
 
   return users;

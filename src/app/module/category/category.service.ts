@@ -1,6 +1,8 @@
+import { CategoryWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import {
+  ICategoryQuery,
   ICreateCategoryPayload,
   IUpdateCategoryPayload,
 } from "./category.interface";
@@ -17,8 +19,8 @@ const createCategory = async (payload: ICreateCategoryPayload) => {
     where: {
       name: {
         equals: name,
-        mode: "insensitive"
-      }
+        mode: "insensitive",
+      },
     },
   });
 
@@ -36,14 +38,57 @@ const createCategory = async (payload: ICreateCategoryPayload) => {
   return category;
 };
 
-const getAllCategories = async () => {
+const getAllCategories = async (query: ICategoryQuery) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+
+  const page = query.page ? Number(query.page) : 1;
+
+  const skip = (page - 1) * limit;
+
+  const sortBy = query.sortBy ? query.sortBy : "createdAt";
+
+  const sortOrder = query.sortOrder ? query.sortOrder : "desc";
+
+  const andConditions: CategoryWhereInput[] = [];
+
+  if (query.search) {
+    andConditions.push({
+      name: {
+        contains: query.search,
+        mode: "insensitive",
+      },
+    });
+  }
+
   const categories = await prisma.category.findMany({
+    where: {
+      AND: andConditions,
+    },
+
+    take: limit,
+    skip,
+
     orderBy: {
-      createdAt: "desc",
+      [sortBy]: sortOrder,
     },
   });
 
-  return categories;
+  const total = await prisma.category.count({
+    where: {
+      AND: andConditions,
+    },
+  });
+
+  return {
+    data: categories,
+
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 const getSingleCategory = async (id: string) => {
@@ -118,12 +163,12 @@ const deleteCategory = async (id: string) => {
       id,
     },
     include: {
-        _count: {
-            select: {
-                products: true
-            }
-        }
-    }
+      _count: {
+        select: {
+          products: true,
+        },
+      },
+    },
   });
   if (!existingCategory) {
     throw new AppError(httpStatus.NOT_FOUND, "Category not found!");

@@ -1,8 +1,10 @@
+import { ProductWhereInput } from "../../../generated/prisma/models";
 import { cloudinary } from "../../lib/cloudinary";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import {
   ICreateProductPayload,
+  IProductQuery,
   IUpdateProductPayload,
   IUpdateStockPayload,
 } from "./product.interface";
@@ -103,18 +105,70 @@ const createProduct = async (
   return product;
 };
 
-const getAllProducts = async () => {
+const getAllProducts = async (query: IProductQuery) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+
+  const page = query.page ? Number(query.page) : 1;
+
+  const skip = (page - 1) * limit;
+
+  const sortBy = query.sortBy ? query.sortBy : "createdAt";
+
+  const sortOrder = query.sortOrder ? query.sortOrder : "desc";
+
+  const andConditions: ProductWhereInput[] = [];
+
+  if (query.search) {
+    andConditions.push({
+      OR: [
+        {
+          name: {
+            contains: query.search,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: query.search,
+            mode: "insensitive",
+          },
+        },
+      ],
+    });
+  }
+
   const products = await prisma.product.findMany({
+    where: {
+      AND: andConditions,
+    },
+    take: limit,
+    skip,
+
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+
     include: {
       category: true,
     },
+  });
 
-    orderBy: {
-      createdAt: "desc",
+    const total = await prisma.product.count({
+    where: {
+      AND: andConditions,
     },
   });
 
-  return products;
+   return {
+    data: products,
+
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 const getSingleProduct = async (id: string) => {
@@ -146,10 +200,7 @@ const updateProduct = async (
   });
 
   if (!existingProduct) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "Product not found!",
-    );
+    throw new AppError(httpStatus.NOT_FOUND, "Product not found!");
   }
 
   // Category check
@@ -161,10 +212,7 @@ const updateProduct = async (
     });
 
     if (!category) {
-      throw new AppError(
-        httpStatus.NOT_FOUND,
-        "Category not found!",
-      );
+      throw new AppError(httpStatus.NOT_FOUND, "Category not found!");
     }
   }
 
@@ -233,35 +281,27 @@ const updateProduct = async (
   return updatedProduct;
 };
 
+const updateStock = async (id: string, payload: IUpdateStockPayload) => {
+  const quantity = Number(payload.quantity);
 
-const updateStock = async ( id: string, payload: IUpdateStockPayload) => {
-    const quantity = Number(payload.quantity);
-
-      if (
-    Number.isNaN(quantity) ||
-    quantity <= 0 ||
-    !Number.isInteger(quantity)
-  ) {
+  if (Number.isNaN(quantity) || quantity <= 0 || !Number.isInteger(quantity)) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       "Quantity must be a positive integer!",
     );
   }
 
-    const product = await prisma.product.findUnique({
+  const product = await prisma.product.findUnique({
     where: {
       id,
     },
   });
 
-    if (!product) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "Product not found!",
-    );
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, "Product not found!");
   }
 
-   const updatedProduct = await prisma.product.update({
+  const updatedProduct = await prisma.product.update({
     where: {
       id,
     },
@@ -278,8 +318,7 @@ const updateStock = async ( id: string, payload: IUpdateStockPayload) => {
   });
 
   return updatedProduct;
-}
-
+};
 
 const deleteProduct = async (id: string) => {
   const product = await prisma.product.findUnique({
@@ -289,10 +328,7 @@ const deleteProduct = async (id: string) => {
   });
 
   if (!product) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "Product not found!",
-    );
+    throw new AppError(httpStatus.NOT_FOUND, "Product not found!");
   }
 
   const deletedProduct = await prisma.product.delete({
@@ -303,7 +339,6 @@ const deleteProduct = async (id: string) => {
 
   return deletedProduct;
 };
-
 
 export const ProductService = {
   createProduct,
