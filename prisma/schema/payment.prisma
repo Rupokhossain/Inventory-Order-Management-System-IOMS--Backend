@@ -1,11 +1,9 @@
 model Payment {
-  id             String         @id @default(uuid())
-  orderId        String         @unique
-<<<<<<< HEAD
-  transactionId  String?         @unique
-=======
-  transactionId  String         @unique
->>>>>>> e887151e8a90af17877fe00c1709d2c37e5eb549
+  id               String  @id @default(uuid())
+  orderId          String  @unique
+  gatewayPaymentId String? @unique
+  transactionId    String? @unique
+
   paymentGateway PaymentGateway
   amount         Decimal        @db.Decimal(10, 2)
   status         PaymentStatus  @default(PENDING)
