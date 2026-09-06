@@ -1,7 +1,7 @@
 model Payment {
   id             String         @id @default(uuid())
   orderId        String         @unique
-  transactionId  String         @unique
+  transactionId  String?         @unique
   paymentGateway PaymentGateway
   amount         Decimal        @db.Decimal(10, 2)
   status         PaymentStatus  @default(PENDING)
