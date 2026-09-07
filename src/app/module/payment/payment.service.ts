@@ -1,6 +1,7 @@
 import { Role } from "../../../generated/prisma/enums";
 import { PaymentWhereInput } from "../../../generated/prisma/models";
 import config from "../../config";
+import { transporter } from "../../lib/nodemailer";
 import { prisma } from "../../lib/prisma";
 import { redisClient } from "../../lib/redis";
 import { RequestUser } from "../../middleware/checkAuth";
@@ -12,7 +13,8 @@ import {
   IBkashGrantTokenResponse,
 } from "./payment.interface";
 import httpStatus from "http-status";
-
+import path from "path";
+import ejs from "ejs";
 
 const getBkashToken = async (): Promise<string> => {
   try {
@@ -47,7 +49,8 @@ const getBkashToken = async (): Promise<string> => {
         }),
       });
 
-      const refreshData = (await refreshTokenResponse.json()) as IBkashGrantTokenResponse;
+      const refreshData =
+        (await refreshTokenResponse.json()) as IBkashGrantTokenResponse;
 
       if (refreshTokenResponse.ok && refreshData.id_token) {
         bkashIdToken = refreshData.id_token;
@@ -92,7 +95,6 @@ const getBkashToken = async (): Promise<string> => {
       );
     }
 
-  
     await redisClient.set(IdTokenKey, data.id_token, {
       expiration: {
         type: "EX",
@@ -246,10 +248,10 @@ const executeBkashPayment = async (paymentID: string) => {
     include: {
       order: {
         include: {
-          customer: true
-        }
-      }
-    }
+          customer: true,
+        },
+      },
+    },
   });
 
   if (!payment) {
@@ -297,6 +299,34 @@ const executeBkashPayment = async (paymentID: string) => {
         order: updatedOrder,
       };
     });
+
+    try {
+      const customerEmail = payment.order?.customer?.email;
+      const customerName = payment.order?.customer?.name || "Customer";
+
+      if (customerEmail) {
+        const templatePath = path.join(
+          process.cwd(),
+          "src/app/templates/orderConfirmation.ejs",
+        );
+
+        const html = await ejs.renderFile(templatePath, {
+          customerName,
+          orderId: payment.orderId,
+          trxID: data.trxID,
+          amount: payment.amount,
+        });
+
+        await transporter.sendMail({
+          from: config.email_sender,
+          to: customerEmail,
+          subject: `Payment Confirmation - Order #${payment.orderId}`,
+          html,
+        });
+      }
+    } catch (emailError) {
+      console.error("Failed to send order confirmation email:", emailError);
+    }
 
     return result;
   }
