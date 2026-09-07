@@ -2,6 +2,8 @@ import { Router } from "express";
 import { auth } from "../../middleware/checkAuth";
 import { Role } from "../../../generated/prisma/enums";
 import { PaymentController } from "./payment.controller";
+import { validateRequest } from "../../middleware/validateRequest";
+import { PaymentValidation } from "./payment.validation";
 
 
 const router = Router()
@@ -16,6 +18,7 @@ router.post(
 router.post(
   "/bkash/execute",
   auth(Role.CUSTOMER),
+  validateRequest(PaymentValidation.executeBkashPaymentValidationSchema),
   PaymentController.executeBkashPayment,
 );
 

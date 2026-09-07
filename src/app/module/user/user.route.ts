@@ -2,6 +2,8 @@ import { Router } from "express";
 import { UserController } from "./user.controller";
 import { auth } from "../../middleware/checkAuth";
 import { Role } from "../../../generated/prisma/enums";
+import { validateRequest } from "../../middleware/validateRequest";
+import { UserValidation } from "./user.validation";
 
 const router = Router();
 
@@ -20,7 +22,8 @@ router.patch(
 
 router.patch(
   "/change-password",
-  auth(Role.ADMIN, Role.MANAGER, Role.CUSTOMER),
+  validateRequest(UserValidation.changePasswordValidationSchema),
+    auth(Role.ADMIN, Role.MANAGER, Role.CUSTOMER),
   UserController.changePassword,
 );
 

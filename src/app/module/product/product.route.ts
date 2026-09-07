@@ -3,6 +3,8 @@ import { auth } from "../../middleware/checkAuth";
 import { Role } from "../../../generated/prisma/enums";
 import { upload } from "../../lib/multer";
 import { ProductController } from "./product.controller";
+import { validateRequest } from "../../middleware/validateRequest";
+import { ProductValidation } from "./product.validation";
 
 const router = Router();
 
@@ -11,6 +13,7 @@ const router = Router();
 router.post(
   "/",
   auth(Role.ADMIN, Role.MANAGER),
+  validateRequest(ProductValidation.createProductValidationSchema),
   upload.single("image"),
   ProductController.createProduct,
 );
@@ -45,6 +48,7 @@ router.patch(
   "/:id",
   auth(Role.ADMIN, Role.MANAGER),
   upload.single("image"),
+  validateRequest(ProductValidation.updateProductValidationSchema),
   ProductController.updateProduct,
 );
 

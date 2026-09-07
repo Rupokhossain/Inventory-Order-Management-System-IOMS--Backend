@@ -2,12 +2,15 @@ import { Router } from "express";
 import { auth } from "../../middleware/checkAuth";
 import { Role } from "../../../generated/prisma/enums";
 import { OrderController } from "./order.controller";
+import { validateRequest } from "../../middleware/validateRequest";
+import { OrderValidation } from "./order.validation";
 
 const router = Router();
 
 router.post(
   "/",
   auth(Role.CUSTOMER),
+  validateRequest(OrderValidation.createOrderValidationSchema),
   OrderController.createOrder,
 );
 

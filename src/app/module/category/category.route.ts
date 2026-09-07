@@ -4,12 +4,15 @@ import { CategoryController } from "./category.controller";
 import { auth } from "../../middleware/checkAuth";
 
 import { Role } from "../../../generated/prisma/enums";
+import { validateRequest } from "../../middleware/validateRequest";
+import { CategoryValidation } from "./category.validation";
 
 const router = Router();
 
 router.post(
   "/",
   auth(Role.ADMIN, Role.MANAGER),
+  validateRequest(CategoryValidation.createCategoryValidationSchema),
   CategoryController.createCategory,
 );
 
@@ -28,6 +31,7 @@ router.get(
 router.patch(
   "/:id",
   auth(Role.ADMIN, Role.MANAGER),
+  validateRequest(CategoryValidation.updateCategoryValidationSchema),
   CategoryController.updateCategory,
 );
 
