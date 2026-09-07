@@ -243,6 +243,13 @@ const executeBkashPayment = async (paymentID: string) => {
     where: {
       gatewayPaymentId: paymentID,
     },
+    include: {
+      order: {
+        include: {
+          customer: true
+        }
+      }
+    }
   });
 
   if (!payment) {

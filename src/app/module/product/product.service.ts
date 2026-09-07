@@ -153,13 +153,13 @@ const getAllProducts = async (query: IProductQuery) => {
     },
   });
 
-    const total = await prisma.product.count({
+  const total = await prisma.product.count({
     where: {
       AND: andConditions,
     },
   });
 
-   return {
+  return {
     data: products,
 
     meta: {
@@ -188,7 +188,6 @@ const getSingleProduct = async (id: string) => {
   return product;
 };
 
-
 const getLowStockProducts = async (thresholdQuery?: String) => {
   const threshold = thresholdQuery ? Number(thresholdQuery) : 5;
 
@@ -207,8 +206,7 @@ const getLowStockProducts = async (thresholdQuery?: String) => {
   });
 
   return lowStockProducts;
-}
-
+};
 
 const updateProduct = async (
   id: string,
@@ -346,6 +344,7 @@ const deleteProduct = async (id: string) => {
   const product = await prisma.product.findUnique({
     where: {
       id,
+      isDeleted: false,
     },
   });
 
@@ -353,9 +352,12 @@ const deleteProduct = async (id: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Product not found!");
   }
 
-  const deletedProduct = await prisma.product.delete({
+  const deletedProduct = await prisma.product.update({
     where: {
       id,
+    },
+    data: {
+      isDeleted: true,
     },
   });
 
