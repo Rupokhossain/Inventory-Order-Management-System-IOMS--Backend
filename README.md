@@ -175,16 +175,16 @@ The API uses JWT-based authentication. Authentication tokens are stored securely
 > **Important:** Replace these values with your actual demo credentials before submission.
 
 **Admin**
-*   **Email:** `YOUR_ADMIN_EMAIL`
-*   **Password:** `YOUR_ADMIN_PASSWORD`
+*   **Email:** `rh.siam999@gmail.com`
+*   **Password:** `siam11**##@@!!11A`
 
 **Manager**
-*   **Email:** `YOUR_MANAGER_EMAIL`
-*   **Password:** `YOUR_MANAGER_PASSWORD`
+*   **Email:** `N/A`
+*   **Password:** `N/A`
 
 **Customer**
-*   **Email:** `YOUR_CUSTOMER_EMAIL`
-*   **Password:** `YOUR_CUSTOMER_PASSWORD`
+*   **Email:** `siam121483@gmail.com`
+*   **Password:** `siam11**##@@AA`
 
 ---
 
