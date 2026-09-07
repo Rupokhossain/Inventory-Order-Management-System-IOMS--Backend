@@ -1,6 +1,4 @@
-এখানে আপনার দেওয়া README-এর সম্পূর্ণ বিষয়বস্তু একটি ডকুমেন্টের মতো করে সাজিয়ে দেওয়া হলো। আপনি এটি কপি করে সরাসরি Google Docs, Microsoft Word, বা Notion-এ পেস্ট করতে পারেন।
 
----
 
 # Inventory & Order Management System (IOMS) - Backend
 
@@ -8,7 +6,6 @@
 
 Production API:
 > **https://YOUR-LIVE-API-URL.com**
-> *(দয়া করে উপরের URL-টি আপনার আসল ডিপ্লয়েড ব্যাকএন্ড URL দিয়ে প্রতিস্থাপন করুন)*
 
 ---
 
