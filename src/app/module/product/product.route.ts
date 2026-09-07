@@ -24,6 +24,14 @@ router.get(
 );
 
 
+// Get Low Stock Products
+router.get(
+  "/low-stock",
+  auth(Role.ADMIN, Role.MANAGER),
+  ProductController.getLowStockProducts,
+);
+
+
 // Get Single Product
 router.get(
   "/:id",

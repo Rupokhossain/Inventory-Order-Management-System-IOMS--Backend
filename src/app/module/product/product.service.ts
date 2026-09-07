@@ -188,6 +188,28 @@ const getSingleProduct = async (id: string) => {
   return product;
 };
 
+
+const getLowStockProducts = async (thresholdQuery?: String) => {
+  const threshold = thresholdQuery ? Number(thresholdQuery) : 5;
+
+  const lowStockProducts = await prisma.product.findMany({
+    where: {
+      stockQuantity: {
+        lte: threshold,
+      },
+    },
+    include: {
+      category: true,
+    },
+    orderBy: {
+      stockQuantity: "asc",
+    },
+  });
+
+  return lowStockProducts;
+}
+
+
 const updateProduct = async (
   id: string,
   payload: IUpdateProductPayload,
@@ -344,6 +366,7 @@ export const ProductService = {
   createProduct,
   getAllProducts,
   getSingleProduct,
+  getLowStockProducts,
   updateProduct,
   updateStock,
   deleteProduct,

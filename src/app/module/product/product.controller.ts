@@ -51,6 +51,23 @@ const getSingleProduct = catchAsync(
   },
 )
 
+
+const getLowStockProducts = catchAsync(
+  async (req: Request, res: Response) => {
+    const { threshold } = req.query;
+
+    const result = await ProductService.getLowStockProducts(threshold as string);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Low stock products retrieved successfully!",
+      data: result,
+    });
+  },
+);
+
+
 const updateProduct = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -110,6 +127,7 @@ export const ProductController = {
   createProduct,
   getAllProducts,
   getSingleProduct,
+  getLowStockProducts,
   updateProduct,
   updateStock,
   deleteProduct,

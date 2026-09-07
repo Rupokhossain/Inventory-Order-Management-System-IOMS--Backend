@@ -24,4 +24,5 @@ export interface IProductQuery {
   sortOrder?: "asc" | "desc";
   page?: string;
   limit?: string;
+  threshold?: string;
 }
