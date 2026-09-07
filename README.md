@@ -590,8 +590,8 @@ Ensure all environment variables are correctly set in the production environment
 **Siam Ahmed**
 Frontend / Backend Developer
 
-*   GitHub: [https://github.com/Rupokhossain]
-*   LinkedIn: [https://www.linkedin.com/in/siam-ahmed-dev/]
+*   GitHub: https://github.com/Rupokhossain
+*   LinkedIn: https://www.linkedin.com/in/siam-ahmed-dev/
 
 ---
 
