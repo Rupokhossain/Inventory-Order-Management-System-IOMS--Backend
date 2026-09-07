@@ -42,3 +42,8 @@ const getSummary = async () => {
   };
 
 }
+
+
+export const AnalyticsService = {
+  getSummary,
+};
