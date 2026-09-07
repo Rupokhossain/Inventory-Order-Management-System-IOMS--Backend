@@ -1,6 +1,10 @@
+import { Role } from "../../../generated/prisma/enums";
+import { PaymentWhereInput } from "../../../generated/prisma/models";
 import config from "../../config";
 import { prisma } from "../../lib/prisma";
+import { RequestUser } from "../../middleware/checkAuth";
 import { AppError } from "../../utils/AppError";
+import { IUserQuery } from "../user/user.interface";
 import {
   IBkashCreatePaymentResponse,
   IBkashExecutePaymentResponse,
@@ -55,10 +59,20 @@ const createBkashPayment = async (orderId: string, customerId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Order not found!");
   }
 
-  if (order.status !== "PENDING") {
+  // if (order.status !== "PENDING") {
+  //   throw new AppError(
+  //     httpStatus.BAD_REQUEST,
+  //     "Payment can only be initiated for a pending order!",
+  //   );
+  // }
+
+  if (
+    order.status === ("CONFIRMED" as string) ||
+    order.status === ("COMPLETED" as string)
+  ) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      "Payment can only be initiated for a pending order!",
+      "This order is already confirmed and cannot be paid again!",
     );
   }
 
@@ -147,7 +161,6 @@ const createBkashPayment = async (orderId: string, customerId: string) => {
 };
 
 const executeBkashPayment = async (paymentID: string) => {
-  // ১. পেমেন্ট রেকর্ড খুঁজে নেওয়া
   const payment = await prisma.payment.findUnique({
     where: {
       gatewayPaymentId: paymentID,
@@ -158,10 +171,8 @@ const executeBkashPayment = async (paymentID: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Payment record not found!");
   }
 
-  // ২. বিকাশের একই টোকেন রিউজ বা গেট করা
   const token = await getBkashToken();
 
-  // ৩. সঠিক Execute Endpoint (URL-এর শেষে ID থাকবে না)
   const url = `${config.bkash_base_url}/tokenized/checkout/execute`;
 
   const response = await fetch(url, {
@@ -172,15 +183,13 @@ const executeBkashPayment = async (paymentID: string) => {
       authorization: token,
       "x-app-key": config.bkash_app_key as string,
     },
-    body: JSON.stringify({ paymentID }), // Body-তে paymentID দিতে হবে
+    body: JSON.stringify({ paymentID }),
   });
 
   const data = (await response.json()) as IBkashExecutePaymentResponse;
 
-  // ৪. বিকাশের রেসপন্স লগ করে চেক করা (ডেবাগিং সহজ করতে)
   console.log("bKash Execute API Response:", data);
 
-  // ৫. পেমেন্ট সফল হলে ডাটাবেজ আপডেট
   if (response.ok && data.statusCode === "0000" && data.trxID) {
     const result = await prisma.$transaction(async (tx) => {
       const updatedPayment = await tx.payment.update({
@@ -207,7 +216,6 @@ const executeBkashPayment = async (paymentID: string) => {
     return result;
   }
 
-  // ৬. পেমেন্ট ব্যর্থ হলে স্ট্যাটাস FAILED করা
   await prisma.payment.update({
     where: { id: payment.id },
     data: {
@@ -220,7 +228,6 @@ const executeBkashPayment = async (paymentID: string) => {
     data.statusMessage || "bKash payment failed!",
   );
 };
-
 
 const bkashCallback = async (paymentID: string, status: string) => {
   if (!paymentID) {
@@ -283,9 +290,182 @@ const bkashCallback = async (paymentID: string, status: string) => {
   throw new AppError(httpStatus.BAD_REQUEST, "Invalid bKash payment status!");
 };
 
+const getMyPayments = async (query: IUserQuery, user: RequestUser) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+
+  const sortBy = query.sortBy ? query.sortBy : "createdAt";
+  const sortOrder = query.sortOrder ? query.sortOrder : "desc";
+
+  const payments = await prisma.payment.findMany({
+    where: {
+      order: {
+        customerId: user.userId,
+      },
+    },
+    take: limit,
+    skip,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    include: {
+      order: {
+        include: {
+          orderItems: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const total = await prisma.payment.count({
+    where: {
+      order: {
+        customerId: user.userId,
+      },
+    },
+  });
+
+  return {
+    data: payments,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+const getAllPayments = async (query: IUserQuery) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+
+  const sortBy = query.sortBy ? query.sortBy : "createdAt";
+  const sortOrder = query.sortOrder ? query.sortOrder : "desc";
+
+  const whereConditions: PaymentWhereInput[] = [];
+
+  if (query.customerEmail) {
+    whereConditions.push({
+      order: {
+        customer: {
+          email: query.customerEmail,
+        },
+      },
+    });
+  }
+
+  if (query.status) {
+    whereConditions.push({
+      status: query.status,
+    });
+  }
+
+  if (query.paymentGateway) {
+    whereConditions.push({
+      paymentGateway: query.paymentGateway,
+    });
+  }
+
+  const payments = await prisma.payment.findMany({
+    where: {
+      AND: whereConditions,
+    },
+    take: limit,
+    skip,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    include: {
+      order: {
+        include: {
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          orderItems: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const total = await prisma.payment.count({
+    where: {
+      AND: whereConditions,
+    },
+  });
+
+  return {
+    data: payments,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+const getSinglePayment = async (paymentId: string, user: RequestUser) => {
+  const payment = await prisma.payment.findUnique({
+    where: {
+      id: paymentId,
+    },
+    include: {
+      order: {
+        include: {
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          orderItems: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!payment) {
+    throw new AppError(httpStatus.NOT_FOUND, "Payment not found!");
+  }
+
+  if (user.role === Role.CUSTOMER) {
+    if (payment.order.customerId !== user.userId) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not allowed to view this payment!",
+      );
+    }
+  }
+
+  return payment;
+};
+
 export const PaymentService = {
   getBkashToken,
   createBkashPayment,
   executeBkashPayment,
   bkashCallback,
+  getMyPayments,
+  getAllPayments,
+  getSinglePayment,
 };

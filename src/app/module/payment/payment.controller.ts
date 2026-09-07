@@ -43,20 +43,58 @@ const bkashCallback = catchAsync(async (req: Request, res: Response) => {
     status as string,
   );
 
-
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Payment completed successfully!",
     data: result,
   });
-
-
 });
 
+const getMyPayments = catchAsync(async (req: Request, res: Response) => {
+  const result = await PaymentService.getMyPayments(req.query, req.user!);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My payments retrieved successfully!",
+    data: result,
+  });
+});
+
+const getAllPayments = catchAsync(async (req: Request, res: Response) => {
+  const result = await PaymentService.getAllPayments(req.query);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All payments retrieved successfully!",
+    data: result,
+  });
+});
+
+const getSinglePayment = catchAsync(async (req: Request, res: Response) => {
+  const { paymentId } = req.params;
+
+  const result = await PaymentService.getSinglePayment(
+    paymentId as string,
+    req.user!,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Payment retrieved successfully!",
+    data: result,
+  });
+});
 
 export const PaymentController = {
   createBkashPayment,
   executeBkashPayment,
   bkashCallback,
+
+  getMyPayments,
+  getAllPayments,
+  getSinglePayment,
 };

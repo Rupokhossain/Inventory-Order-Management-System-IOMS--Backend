@@ -24,4 +24,6 @@ export interface IUserQuery {
   sortOrder?: "asc" | "desc";
   page?: string;
   limit?: string;
+
+  [key: string] : any
 }
