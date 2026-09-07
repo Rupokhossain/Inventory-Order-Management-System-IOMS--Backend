@@ -1,103 +1,124 @@
-Inventory & Order Management System (IOMS) - Backend
-A complete RESTful backend API for an Inventory & Order Management System (IOMS).
-This system provides authentication, role-based authorization, category management, product management, order management, payment integration, validation, pagination, searching, sorting, and secure database operations.
-🚀 Live API
+এখানে আপনার দেওয়া README-এর সম্পূর্ণ বিষয়বস্তু একটি ডকুমেন্টের মতো করে সাজিয়ে দেওয়া হলো। আপনি এটি কপি করে সরাসরি Google Docs, Microsoft Word, বা Notion-এ পেস্ট করতে পারেন।
+
+---
+
+# Inventory & Order Management System (IOMS) - Backend
+
+## 🚀 Live API
+
 Production API:
-https://YOUR-LIVE-API-URL.com
-Replace the URL above with your actual deployed backend URL.
-📌 Features
-Authentication & Authorization
-User registration
-User login
-Email verification with OTP
-Forgot password
-Reset password with OTP
-Google authentication
-JWT-based authentication
-HTTP-only cookie authentication
-Role-based authorization
-User Management
-Get all users
-Get user details
-Update user information
-Update user role
-Update user status
-Search and pagination
-Category Management
-Create category
-Get all categories
-Get single category
-Update category
-Delete category
-Search
-Pagination
-Sorting
-Product Management
-Create product
-Update product
-Delete product
-Get single product
-Get all products
-Product search
-Filter by category
-Price filtering
-Pagination
-Sorting
-Cloudinary image upload
-Order Management
-Create order
-Get customer's own orders
-Get all orders
-Get single order
-Search orders
-Filter orders by status
-Pagination
-Sorting
-Update order status
-Cancel order
-Restore stock after cancellation
-Transaction-based order creation
-Payment
-bKash Sandbox payment integration
-Create bKash payment
-Execute bKash payment
-bKash callback handling
-Payment status tracking
-Payment history
-Customer payment history
-Admin/Manager payment management
-Payment filtering
-Payment pagination
-Payment sorting
-Validation
-Zod request validation
-Body validation
-Query validation
-Params validation
-Password validation
-Email validation
-OTP validation
-Product validation
-Order validation
-Payment validation
-🛠️ Technologies Used
-Node.js
-Express.js
-TypeScript
-PostgreSQL
-Prisma ORM
-Redis
-JWT
-bcrypt
-Zod
-Cloudinary
-bKash Payment Gateway
-Nodemailer
-Google OAuth
-Postman
-📁 Project Structure
-code
-Text
+> **https://YOUR-LIVE-API-URL.com**
+> *(দয়া করে উপরের URL-টি আপনার আসল ডিপ্লয়েড ব্যাকএন্ড URL দিয়ে প্রতিস্থাপন করুন)*
+
+---
+
+## 📌 Features
+
+### Authentication & Authorization
+*   User registration
+*   User login
+*   Email verification with OTP
+*   Forgot password
+*   Reset password with OTP
+*   Google authentication
+*   JWT-based authentication
+*   HTTP-only cookie authentication
+*   Role-based authorization
+
+### User Management
+*   Get all users
+*   Get user details
+*   Update user information
+*   Update user role
+*   Update user status
+*   Search and pagination
+
+### Category Management
+*   Create category
+*   Get all categories
+*   Get single category
+*   Update category
+*   Delete category
+*   Search
+*   Pagination
+*   Sorting
+
+### Product Management
+*   Create product
+*   Update product
+*   Delete product
+*   Get single product
+*   Get all products
+*   Product search
+*   Filter by category
+*   Price filtering
+*   Pagination
+*   Sorting
+*   Cloudinary image upload
+
+### Order Management
+*   Create order
+*   Get customer's own orders
+*   Get all orders
+*   Get single order
+*   Search orders
+*   Filter orders by status
+*   Pagination
+*   Sorting
+*   Update order status
+*   Cancel order
+*   Restore stock after cancellation
+*   Transaction-based order creation
+
+### Payment
+*   bKash Sandbox payment integration
+*   Create bKash payment
+*   Execute bKash payment
+*   bKash callback handling
+*   Payment status tracking
+*   Payment history
+*   Customer payment history
+*   Admin/Manager payment management
+*   Payment filtering
+*   Payment pagination
+*   Payment sorting
+
+### Validation
+*   Zod request validation
+*   Body validation
+*   Query validation
+*   Params validation
+*   Password validation
+*   Email validation
+*   OTP validation
+*   Product validation
+*   Order validation
+*   Payment validation
+
+---
+
+## 🛠️ Technologies Used
+
+*   Node.js
+*   Express.js
+*   TypeScript
+*   PostgreSQL
+*   Prisma ORM
+*   Redis
+*   JWT
+*   bcrypt
+*   Zod
+*   Cloudinary
+*   bKash Payment Gateway
+*   Nodemailer
+*   Google OAuth
+*   Postman
+
+---
+
+## 📁 Project Structure
+
+```text
 src/
 ├── app/
 │   ├── config/
@@ -125,56 +146,56 @@ prisma/
 package.json
 tsconfig.json
 README.md
-🔐 Authentication
+```
 
-The API uses JWT-based authentication.
+---
 
-Authentication tokens are stored securely using HTTP-only cookies.
+## 🔐 Authentication
 
-Protected routes require authentication and appropriate user roles.
+The API uses JWT-based authentication. Authentication tokens are stored securely using HTTP-only cookies. Protected routes require authentication and appropriate user roles.
 
-Available Roles
-ADMIN
-MANAGER
-CUSTOMER
-Role Permissions
-ADMIN
-Full system access
-User management
-Category management
-Product management
-Order management
-Payment management
-MANAGER
-Category management
-Product management
-Order management
-Payment management
-CUSTOMER
-Register/Login
-Browse products
-Create orders
-View own orders
-Cancel own orders
-Make payments
-View own payments
-🔑 Demo Credentials
-Admin
-Email: YOUR_ADMIN_EMAIL
-Password: YOUR_ADMIN_PASSWORD
-Manager
-Email: YOUR_MANAGER_EMAIL
-Password: YOUR_MANAGER_PASSWORD
-Customer
-Email: YOUR_CUSTOMER_EMAIL
-Password: YOUR_CUSTOMER_PASSWORD
+### Available Roles
+*   ADMIN
+*   MANAGER
+*   CUSTOMER
 
-Replace these values with your actual demo credentials before submission.
+### Role Permissions
 
-⚙️ Environment Variables
+| Permission | ADMIN | MANAGER | CUSTOMER |
+| :--- | :---: | :---: | :---: |
+| Full system access | ✅ | | |
+| User management | ✅ | | |
+| Category management | ✅ | ✅ | |
+| Product management | ✅ | ✅ | |
+| Order management | ✅ | ✅ | ✅ (Own) |
+| Payment management | ✅ | ✅ | ✅ (Own) |
+| Browse/Create orders | ✅ | ✅ | ✅ |
 
-Create a .env file in the root directory.
+---
 
+## 🔑 Demo Credentials
+
+> **Important:** Replace these values with your actual demo credentials before submission.
+
+**Admin**
+*   **Email:** `YOUR_ADMIN_EMAIL`
+*   **Password:** `YOUR_ADMIN_PASSWORD`
+
+**Manager**
+*   **Email:** `YOUR_MANAGER_EMAIL`
+*   **Password:** `YOUR_MANAGER_PASSWORD`
+
+**Customer**
+*   **Email:** `YOUR_CUSTOMER_EMAIL`
+*   **Password:** `YOUR_CUSTOMER_PASSWORD`
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the root directory and add the following variables.
+
+```env
 NODE_ENV=development
 PORT=5000
 
@@ -207,320 +228,316 @@ BKASH_APP_KEY="YOUR_BKASH_APP_KEY"
 BKASH_APP_SECRET="YOUR_BKASH_APP_SECRET"
 
 BKASH_CALLBACK_URL="http://localhost:5000/api/v1/payments/bkash/callback"
+```
 
-Never commit your .env file to GitHub.
+> **⚠️ Never commit your .env file to GitHub.**
 
-🚀 Installation
+---
 
-Clone the repository:
+## 🚀 Installation
 
-git clone YOUR_GITHUB_REPOSITORY_URL
+1.  **Clone the repository:**
+    ```bash
+    git clone YOUR_GITHUB_REPOSITORY_URL
+    ```
 
-Go to the project directory:
+2.  **Go to the project directory:**
+    ```bash
+    cd inventory-order-management-system-backend
+    ```
 
-cd inventory-order-management-system-backend
+3.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-Install dependencies:
+4.  **Generate Prisma Client:**
+    ```bash
+    npx prisma generate
+    ```
 
-npm install
+5.  **Run database migration:**
+    ```bash
+    npx prisma migrate dev
+    ```
 
-Generate Prisma Client:
+6.  **Start development server:**
+    ```bash
+    npm run dev
+    ```
 
-npx prisma generate
+The server will run on: `http://localhost:5000`
 
-Run database migration:
+---
 
-npx prisma migrate dev
+## 📡 API Base URL
 
-Start development server:
+All API routes use the following base URL:
 
-npm run dev
-
-The server will run on:
-
-http://localhost:5000
-📡 API Base URL
-
-All API routes use:
-
+```text
 /api/v1
+```
 
-Local:
-
+**Local Development URL:**
+```text
 http://localhost:5000/api/v1
-🔗 Main API Endpoints
-Authentication
-Method	Endpoint	Access
-POST	/auth/register	Public
-POST	/auth/login	Public
-POST	/auth/verify-email	Public
-POST	/auth/forgot-password	Public
-POST	/auth/reset-password	Public
-GET	/auth/google	Public
-Users
-Method	Endpoint	Access
-GET	/users	Admin
-GET	/users/:id	Admin / Manager
-PATCH	/users/:id	Authorized User
-PATCH	/users/:id/role	Admin
-PATCH	/users/:id/status	Admin
-Categories
-Method	Endpoint	Access
-POST	/categories	Admin / Manager
-GET	/categories	Public
-GET	/categories/:id	Public
-PATCH	/categories/:id	Admin / Manager
-DELETE	/categories/:id	Admin / Manager
-Products
-Method	Endpoint	Access
-POST	/products	Admin / Manager
-GET	/products	Public
-GET	/products/:id	Public
-PATCH	/products/:id	Admin / Manager
-DELETE	/products/:id	Admin / Manager
-Product Query Example
+```
+
+---
+
+## 🔗 Main API Endpoints
+
+### Authentication
+| Method | Endpoint | Access |
+| :--- | :--- | :--- |
+| POST | `/auth/register` | Public |
+| POST | `/auth/login` | Public |
+| POST | `/auth/verify-email` | Public |
+| POST | `/auth/forgot-password` | Public |
+| POST | `/auth/reset-password` | Public |
+| GET | `/auth/google` | Public |
+
+### Users
+| Method | Endpoint | Access |
+| :--- | :--- | :--- |
+| GET | `/users` | Admin |
+| GET | `/users/:id` | Admin / Manager |
+| PATCH | `/users/:id` | Authorized User |
+| PATCH | `/users/:id/role` | Admin |
+| PATCH | `/users/:id/status` | Admin |
+
+### Categories
+| Method | Endpoint | Access |
+| :--- | :--- | :--- |
+| POST | `/categories` | Admin / Manager |
+| GET | `/categories` | Public |
+| GET | `/categories/:id` | Public |
+| PATCH | `/categories/:id` | Admin / Manager |
+| DELETE | `/categories/:id` | Admin / Manager |
+
+### Products
+| Method | Endpoint | Access |
+| :--- | :--- | :--- |
+| POST | `/products` | Admin / Manager |
+| GET | `/products` | Public |
+| GET | `/products/:id` | Public |
+| PATCH | `/products/:id` | Admin / Manager |
+| DELETE | `/products/:id` | Admin / Manager |
+
+**Product Query Example:**
+```text
 /products?searchTerm=iphone&page=1&limit=10&sortBy=price&sortOrder=asc
-Orders
-Method	Endpoint	Access
-POST	/orders	Customer
-GET	/orders/my-orders	Customer
-GET	/orders	Admin / Manager
-GET	/orders/:orderId	Authorized
-PATCH	/orders/:orderId/status	Admin / Manager
-PATCH	/orders/:orderId/cancel	Customer
-Order Query Example
+```
+
+### Orders
+| Method | Endpoint | Access |
+| :--- | :--- | :--- |
+| POST | `/orders` | Customer |
+| GET | `/orders/my-orders` | Customer |
+| GET | `/orders` | Admin / Manager |
+| GET | `/orders/:orderId` | Authorized |
+| PATCH | `/orders/:orderId/status` | Admin / Manager |
+| PATCH | `/orders/:orderId/cancel` | Customer |
+
+**Order Query Example:**
+```text
 /orders?status=PENDING&page=1&limit=10&sortBy=createdAt&sortOrder=desc
-💳 Payment API
+```
 
-The project uses the bKash Sandbox payment gateway.
+---
 
-Create bKash Payment
-POST /payments/tokenized/checkout/create/:orderId
+## 💳 Payment API
 
-Example:
+The project uses the **bKash Sandbox** payment gateway.
 
-POST /api/v1/payments/tokenized/checkout/create/a4883c6c-13a5-49ca-a3ec-227a2f056387
+### Create bKash Payment
+`POST /payments/tokenized/checkout/create/:orderId`
 
-Authentication:
+*   **Example:** `POST /api/v1/payments/tokenized/checkout/create/a4883c6c-13a5-49ca-a3ec-227a2f056387`
+*   **Access:** CUSTOMER
 
-CUSTOMER
-Execute bKash Payment
-POST /payments/bkash/execute
+### Execute bKash Payment
+`POST /payments/bkash/execute`
 
-Request body:
+*   **Request body:**
+    ```json
+    {
+      "paymentID": "YOUR_BKASH_PAYMENT_ID"
+    }
+    ```
 
-{
-  "paymentID": "YOUR_BKASH_PAYMENT_ID"
-}
-bKash Callback
-GET /payments/bkash/callback
+### bKash Callback
+`GET /payments/bkash/callback`
+*   This endpoint is called automatically during the bKash payment flow.
 
-This endpoint is called during the bKash payment flow.
+### My Payments
+`GET /payments/my-payments`
+*   Customer can view their own payment history.
+*   **Example:** `/payments/my-payments?page=1&limit=10`
 
-My Payments
-GET /payments/my-payments
+### All Payments
+`GET /payments`
+*   **Access:** ADMIN, MANAGER
+*   **Example:** `/payments?status=PAID&paymentGateway=BKASH&page=1&limit=10`
 
-Customer can view their own payment history.
+### Single Payment
+`GET /payments/:paymentId`
+*   **Example:** `/payments/b72338fd-dcca-4fc0-96af-6e9669a06ed7`
 
-Example:
+---
 
-/payments/my-payments?page=1&limit=10
-All Payments
-GET /payments
+## 📊 Pagination
 
-Access:
+The API supports pagination using query parameters to improve performance and user experience.
 
-ADMIN
-MANAGER
+*   **Parameters:** `page`, `limit`
+*   **Example:** `/products?page=1&limit=10`
 
-Example:
-
-/payments?status=PAID&paymentGateway=BKASH&page=1&limit=10
-Single Payment
-GET /payments/:paymentId
-
-Example:
-
-/payments/b72338fd-dcca-4fc0-96af-6e9669a06ed7
-📊 Pagination
-
-The API supports pagination using:
-
-page
-limit
-
-Example:
-
-/products?page=1&limit=10
-
-Response metadata:
-
+**Response metadata example:**
+```json
 {
   "page": 1,
   "limit": 10,
   "total": 20,
   "totalPages": 2
 }
-🔎 Searching
+```
 
-Example:
+---
 
-/products?searchTerm=iphone
+## 🔎 Searching
 
-The API supports search based on relevant product fields.
+The API supports searching on major entities using keywords.
 
-↕️ Sorting
+*   **Parameter:** `searchTerm`
+*   **Example:** `/products?searchTerm=iphone`
 
-Example:
+---
 
-/products?sortBy=price&sortOrder=asc
+## ↕️ Sorting
 
-Supported sorting orders:
+Results can be sorted based on specific fields in ascending or descending order.
 
-asc
-desc
-🛡️ Validation
+*   **Parameters:** `sortBy`, `sortOrder` (values: `asc`, `desc`)
+*   **Example:** `/products?sortBy=price&sortOrder=asc`
 
-The project uses Zod for server-side request validation.
+---
 
-Validation is implemented for:
+## 🛡️ Validation
 
-Request body
-Request params
-Query parameters
-Authentication
-Products
-Categories
-Orders
-Payments
+The project uses **Zod** for robust server-side request validation to ensure data integrity.
 
-Invalid requests return a 400 Bad Request response.
+Validation covers:
+*   Request body, params, and query parameters
+*   Authentication (Password, Email)
+*   Business logic (Products, Categories, Orders, Payments)
 
-Example:
+Invalid requests return a `400 Bad Request` error with details.
 
+**Error Response Example:**
+```json
 {
   "success": false,
   "statusCode": 400,
-  "message": "Password must contain at least one uppercase letter."
-}
-❌ Error Response Format
-
-The API follows a consistent error response format.
-
-{
-  "success": false,
-  "statusCode": 400,
-  "message": "Something went wrong",
+  "message": "Password must contain at least one uppercase letter.",
   "errors": []
 }
-✅ Success Response Format
+```
 
-Successful requests follow a consistent structure:
+---
 
+## ❌ Error Response Format
+
+All errors follow a consistent JSON structure:
+
+```json
+{
+  "success": false,
+  "statusCode": 400,
+  "message": "Error message",
+  "errors": [
+    // Specific validation errors or details
+  ]
+}
+```
+
+---
+
+## ✅ Success Response Format
+
+Successful operations follow a consistent JSON structure:
+
+```json
 {
   "success": true,
   "statusCode": 200,
   "message": "Operation successful",
-  "data": {}
+  "data": {
+    // The actual response payload
+  }
 }
-💰 Order & Payment Flow
+```
 
-The main order/payment flow is:
+---
 
-Customer
-   ↓
-Create Order
-   ↓
-Order Status = PENDING
-   ↓
-Create bKash Payment
-   ↓
-Redirect to bKash
-   ↓
-Customer Completes Payment
-   ↓
-bKash Callback
-   ↓
-Execute Payment
-   ↓
-Payment Status = PAID
-   ↓
-Order Status = CONFIRMED
-🗄️ Database
+## 💰 Order & Payment Flow
 
-The project uses:
+The system follows a strict transactional workflow for orders and payments:
 
-PostgreSQL
-+
-Prisma ORM
+Customer creates order $\to$ Order Status = PENDING $\to$ Create bKash Payment $\to$ Redirect to bKash $\to$ Customer completes payment $\to$ bKash Callback $\to$ Execute Payment $\to$ Payment Status = PAID $\to$ **Order Status = CONFIRMED**
 
-Main entities include:
+---
 
-User
-Category
-Product
-Order
-OrderItem
-Payment
+## 🗄️ Database
 
-Relationships and constraints are implemented using Prisma.
+*   **Database:** PostgreSQL
+*   **ORM:** Prisma ORM
 
-Indexes are added for frequently queried fields such as:
+**Main entities:**
+*   User
+*   Category
+*   Product
+*   Order
+*   OrderItem
+*   Payment
 
-customerId
-order status
-createdAt
-productId
-orderId
-payment status
-payment gateway
-🔄 Order Status Flow
+Indexes are implemented for optimized querying on frequently accessed fields (e.g., `customerId`, `orderId`, `status`, `createdAt`).
 
-Orders follow a controlled status workflow:
+---
 
-PENDING
-   ↓
-CONFIRMED
-   ↓
-PROCESSING
-   ↓
-SHIPPED
-   ↓
-DELIVERED
+## 🔄 Order Status Flow
 
-Cancellation:
+Orders follow a predefined lifecycle:
 
-PENDING
-   ↓
-CANCELLED
+`PENDING` $\to$ `CONFIRMED` $\to$ `PROCESSING` $\to$ `SHIPPED` $\to$ `DELIVERED`
 
-When an order is cancelled, purchased product stock is restored.
+**Cancellation:**
+`PENDING` $\to$ `CANCELLED`
+*(Note: When an order is cancelled, the purchased product stock is automatically restored).*
 
-💳 Payment Status
+---
 
-Available payment statuses:
+## 💳 Payment Status
 
-PENDING
-PAID
-FAILED
-REFUNDED
+**Available payment statuses:**
+*   PENDING
+*   PAID
+*   FAILED
+*   REFUNDED
 
-Payment gateway:
+**Supported Payment Gateways:**
+*   BKASH (Current implementation uses Sandbox)
+*   STRIPE
+*   SSLCOMMERZ
+*   CASH_ON_DELIVERY
 
-BKASH
-STRIPE
-SSLCOMMERZ
-CASH_ON_DELIVERY
+---
 
-The current implementation uses:
+## 🧪 Testing
 
-bKash Sandbox
-🧪 Testing
+The API is designed to be tested using Postman.
 
-The API can be tested using Postman.
-
-Recommended testing order:
-
+**Recommended testing order:**
 1. Register
 2. Verify Email
 3. Login
@@ -530,619 +547,58 @@ Recommended testing order:
 7. Create Order
 8. Get My Orders
 9. Create bKash Payment
-10. Complete bKash Payment
-11. Verify Payment
-12. Verify Order Status
+10. Complete bKash Payment (Sandbox)
+11. Verify Payment Status
+12. Verify Order Status (Automatically updated)
 13. Get My Payments
 14. Admin Payment Management
-15. Test Validation
-16. Test Role Authorization
-📮 Postman
+15. Test Validation Rules
+16. Test Role Authorization (Access control)
 
-A Postman collection is included with the project.
+### 📮 Postman Collection
+A Postman collection is included in the repository for easy API testing. Import it into Postman and set your environment variables (`baseUrl`, `accessToken`).
 
-Import the collection into Postman and configure:
+**Example BaseUrl:** `http://localhost:5000/api/v1`
 
-baseUrl
-accessToken
+---
 
-Example:
+## 🔒 Security
 
-baseUrl = http://localhost:5000/api/v1
-🔒 Security
+The backend implements industry-standard security best practices:
+*   JWT-based authentication
+*   Secure storage of tokens in HTTP-only cookies
+*   Password hashing using bcrypt
+*   Role-based access control (RBAC)
+*   Input validation using Zod
+*   Protected routes for Admin, Manager, and Customer
+*   Ownership validation to prevent unauthorized access to data
+*   Environment variables to protect sensitive credentials
 
-The project implements:
+---
 
-JWT authentication
-HTTP-only cookies
-Password hashing using bcrypt
-Role-based authorization
-Request validation using Zod
-Protected admin/manager/customer routes
-Ownership validation
-Environment variables for sensitive credentials
-🚀 Deployment
+## 🚀 Deployment
 
-The backend can be deployed to platforms such as:
+The backend can be easily deployed to various cloud platforms that support Node.js, such as:
+*   Vercel
+*   Render
+*   Railway
+*   Heroku
 
-Vercel
-Render
-Railway
-Other Node.js compatible hosting platforms
+Ensure all environment variables are correctly set in the production environment configuration.
 
-Make sure the production environment contains all required environment variables.
+---
 
-👨‍💻 Developer
+## 👨‍💻 Developer
 
-Siam Ahmed
-
+**Siam Ahmed**
 Frontend / Backend Developer
 
-GitHub:
+*   GitHub: [YOUR_GITHUB_PROFILE](YOUR_GITHUB_PROFILE)
+*   LinkedIn: [YOUR_LINKEDIN_PROFILE](YOUR_LINKEDIN_PROFILE)
 
-YOUR_GITHUB_PROFILE
+---
 
-LinkedIn:
-
-YOUR_LINKEDIN_PROFILE
-
-📄 License
+## 📄 License
 
 This project was developed for educational and assignment purposes.
-
-
-### README-te অবশ্যই এই 4টা change korba
-
-```text
-YOUR-LIVE-API-URL
-YOUR_GITHUB_REPOSITORY_URL
-YOUR_GITHUB_PROFILE
-YOUR_LINKEDIN_PROFILE....akta file a likhe dao just copy paste korbo
-Model 5:40 PM
-অবশ্যই, নিচের লিঙ্কগুলো আপনার প্রোজেক্টের সঠিক তথ্য দিয়ে প্রতিস্থাপন করে নিন। আমি শুধুমাত্র আপনার দেওয়া তথ্যের ভিত্তিতে README.md ফাইলটি তৈরি করে দিচ্ছি।
-এখানে আপনার প্রয়োজনীয় ফাইলটি দেওয়া হলো:
-README.md
-code
-Markdown
-# Inventory & Order Management System (IOMS) - Backend
-
-A complete RESTful backend API for an Inventory & Order Management System (IOMS).
-
-This system provides authentication, role-based authorization, category management, product management, order management, payment integration, validation, pagination, searching, sorting, and secure database operations.
-
----
-
-## 🚀 Live API
-
-Production API:
-
-https://YOUR-LIVE-API-URL.com
-
-> Replace the URL above with your actual deployed backend URL.
-
----
-
-## 📌 Features
-
-### Authentication & Authorization
-- User registration
-- User login
-- Email verification with OTP
-- Forgot password
-- Reset password with OTP
-- Google authentication
-- JWT-based authentication
-- HTTP-only cookie authentication
-- Role-based authorization
-
-### User Management
-- Get all users
-- Get user details
-- Update user information
-- Update user role
-- Update user status
-- Search and pagination
-
-### Category Management
-- Create category
-- Get all categories
-- Get single category
-- Update category
-- Delete category
-- Search
-- Pagination
-- Sorting
-
-### Product Management
-- Create product
-- Update product
-- Delete product
-- Get single product
-- Get all products
-- Product search
-- Filter by category
-- Price filtering
-- Pagination
-- Sorting
-- Cloudinary image upload
-
-### Order Management
-- Create order
-- Get customer's own orders
-- Get all orders
-- Get single order
-- Search orders
-- Filter orders by status
-- Pagination
-- Sorting
-- Update order status
-- Cancel order
-- Restore stock after cancellation
-- Transaction-based order creation
-
-### Payment
-- bKash Sandbox payment integration
-- Create bKash payment
-- Execute bKash payment
-- bKash callback handling
-- Payment status tracking
-- Payment history
-- Customer payment history
-- Admin/Manager payment management
-- Payment filtering
-- Payment pagination
-- Payment sorting
-
-### Validation
-- Zod request validation
-- Body validation
-- Query validation
-- Params validation
-- Password validation
-- Email validation
-- OTP validation
-- Product validation
-- Order validation
-- Payment validation
-
----
-
-# 🛠️ Technologies Used
-
-- Node.js
-- Express.js
-- TypeScript
-- PostgreSQL
-- Prisma ORM
-- Redis
-- JWT
-- bcrypt
-- Zod
-- Cloudinary
-- bKash Payment Gateway
-- Nodemailer
-- Google OAuth
-- Postman
-
----
-
-# 📁 Project Structure
-
-```text
-src/
-├── app/
-│   ├── config/
-│   ├── middleware/
-│   ├── module/
-│   │   ├── auth/
-│   │   ├── user/
-│   │   ├── category/
-│   │   ├── product/
-│   │   ├── order/
-│   │   └── payment/
-│   │
-│   ├── routes/
-│   └── validation/
-│
-├── config/
-├── lib/
-├── utils/
-└── server.ts
-
-prisma/
-└── schema.prisma
-
-.env
-package.json
-tsconfig.json
-README.md
-🔐 Authentication
-The API uses JWT-based authentication.
-Authentication tokens are stored securely using HTTP-only cookies.
-Protected routes require authentication and appropriate user roles.
-Available Roles
-ADMIN
-MANAGER
-CUSTOMER
-Role Permissions
-ADMIN
-Full system access
-User management
-Category management
-Product management
-Order management
-Payment management
-MANAGER
-Category management
-Product management
-Order management
-Payment management
-CUSTOMER
-Register/Login
-Browse products
-Create orders
-View own orders
-Cancel own orders
-Make payments
-View own payments
-🔑 Demo Credentials
-Admin
-Email: YOUR_ADMIN_EMAIL
-Password: YOUR_ADMIN_PASSWORD
-Manager
-Email: YOUR_MANAGER_EMAIL
-Password: YOUR_MANAGER_PASSWORD
-Customer
-Email: YOUR_CUSTOMER_EMAIL
-Password: YOUR_CUSTOMER_PASSWORD
-Replace these values with your actual demo credentials before submission.
-⚙️ Environment Variables
-Create a .env file in the root directory.
-code
-Env
-NODE_ENV=development
-PORT=5000
-
-DATABASE_URL="YOUR_POSTGRESQL_DATABASE_URL"
-
-JWT_ACCESS_SECRET="YOUR_ACCESS_SECRET"
-JWT_ACCESS_EXPIRES_IN="YOUR_ACCESS_EXPIRES_IN"
-
-JWT_REFRESH_SECRET="YOUR_REFRESH_SECRET"
-JWT_REFRESH_EXPIRES_IN="YOUR_REFRESH_EXPIRES_IN"
-
-REDIS_URL="YOUR_REDIS_URL"
-
-GOOGLE_CLIENT_ID="YOUR_GOOGLE_CLIENT_ID"
-GOOGLE_CLIENT_SECRET="YOUR_GOOGLE_CLIENT_SECRET"
-
-SMTP_HOST="YOUR_SMTP_HOST"
-SMTP_PORT=587
-SMTP_USER="YOUR_SMTP_USER"
-SMTP_PASS="YOUR_SMTP_PASSWORD"
-
-CLOUDINARY_CLOUD_NAME="YOUR_CLOUDINARY_CLOUD_NAME"
-CLOUDINARY_API_KEY="YOUR_CLOUDINARY_API_KEY"
-CLOUDINARY_API_SECRET="YOUR_CLOUDINARY_API_SECRET"
-
-BKASH_BASE_URL="https://tokenized.sandbox.bka.sh/v1.2.0-beta"
-BKASH_USERNAME="YOUR_BKASH_USERNAME"
-BKASH_PASSWORD="YOUR_BKASH_PASSWORD"
-BKASH_APP_KEY="YOUR_BKASH_APP_KEY"
-BKASH_APP_SECRET="YOUR_BKASH_APP_SECRET"
-
-BKASH_CALLBACK_URL="http://localhost:5000/api/v1/payments/bkash/callback"
-Never commit your .env file to GitHub.
-🚀 Installation
-Clone the repository:
-code
-Bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-Go to the project directory:
-code
-Bash
-cd inventory-order-management-system-backend
-Install dependencies:
-code
-Bash
-npm install
-Generate Prisma Client:
-code
-Bash
-npx prisma generate
-Run database migration:
-code
-Bash
-npx prisma migrate dev
-Start development server:
-code
-Bash
-npm run dev
-The server will run on: http://localhost:5000
-📡 API Base URL
-All API routes use:
-code
-Text
-/api/v1
-Local:
-code
-Text
-http://localhost:5000/api/v1
-🔗 Main API Endpoints
-Authentication
-Method	Endpoint	Access
-POST	/auth/register	Public
-POST	/auth/login	Public
-POST	/auth/verify-email	Public
-POST	/auth/forgot-password	Public
-POST	/auth/reset-password	Public
-GET	/auth/google	Public
-Users
-Method	Endpoint	Access
-GET	/users	Admin
-GET	/users/:id	Admin / Manager
-PATCH	/users/:id	Authorized User
-PATCH	/users/:id/role	Admin
-PATCH	/users/:id/status	Admin
-Categories
-Method	Endpoint	Access
-POST	/categories	Admin / Manager
-GET	/categories	Public
-GET	/categories/:id	Public
-PATCH	/categories/:id	Admin / Manager
-DELETE	/categories/:id	Admin / Manager
-Products
-Method	Endpoint	Access
-POST	/products	Admin / Manager
-GET	/products	Public
-GET	/products/:id	Public
-PATCH	/products/:id	Admin / Manager
-DELETE	/products/:id	Admin / Manager
-Product Query Example
-code
-Text
-/products?searchTerm=iphone&page=1&limit=10&sortBy=price&sortOrder=asc
-Orders
-Method	Endpoint	Access
-POST	/orders	Customer
-GET	/orders/my-orders	Customer
-GET	/orders	Admin / Manager
-GET	/orders/:orderId	Authorized
-PATCH	/orders/:orderId/status	Admin / Manager
-PATCH	/orders/:orderId/cancel	Customer
-Order Query Example
-code
-Text
-/orders?status=PENDING&page=1&limit=10&sortBy=createdAt&sortOrder=desc
-💳 Payment API
-The project uses the bKash Sandbox payment gateway.
-Create bKash Payment
-POST /payments/tokenized/checkout/create/:orderId
-Example:
-code
-Text
-POST /api/v1/payments/tokenized/checkout/create/a4883c6c-13a5-49ca-a3ec-227a2f056387
-Authentication:
-CUSTOMER
-Execute bKash Payment
-POST /payments/bkash/execute
-Request body:
-code
-JSON
-{
-  "paymentID": "YOUR_BKASH_PAYMENT_ID"
-}
-bKash Callback
-GET /payments/bkash/callback
-This endpoint is called during the bKash payment flow.
-My Payments
-GET /payments/my-payments
-Customer can view their own payment history.
-Example:
-code
-Text
-/payments/my-payments?page=1&limit=10
-All Payments
-GET /payments
-Access:
-ADMIN
-MANAGER
-Example:
-code
-Text
-/payments?status=PAID&paymentGateway=BKASH&page=1&limit=10
-Single Payment
-GET /payments/:paymentId
-Example:
-code
-Text
-/payments/b72338fd-dcca-4fc0-96af-6e9669a06ed7
-📊 Pagination
-The API supports pagination using:
-page
-limit
-Example:
-code
-Text
-/products?page=1&limit=10
-Response metadata:
-code
-JSON
-{
-  "page": 1,
-  "limit": 10,
-  "total": 20,
-  "totalPages": 2
-}
-🔎 Searching
-Example:
-code
-Text
-/products?searchTerm=iphone
-The API supports search based on relevant product fields.
-↕️ Sorting
-Example:
-code
-Text
-/products?sortBy=price&sortOrder=asc
-Supported sorting orders:
-asc
-desc
-🛡️ Validation
-The project uses Zod for server-side request validation.
-Validation is implemented for:
-Request body
-Request params
-Query parameters
-Authentication
-Products
-Categories
-Orders
-Payments
-Invalid requests return a 400 Bad Request response.
-Example:
-code
-JSON
-{
-  "success": false,
-  "statusCode": 400,
-  "message": "Password must contain at least one uppercase letter."
-}
-❌ Error Response Format
-The API follows a consistent error response format.
-code
-JSON
-{
-  "success": false,
-  "statusCode": 400,
-  "message": "Something went wrong",
-  "errors": []
-}
-✅ Success Response Format
-Successful requests follow a consistent structure:
-code
-JSON
-{
-  "success": true,
-  "statusCode": 200,
-  "message": "Operation successful",
-  "data": {}
-}
-💰 Order & Payment Flow
-The main order/payment flow is:
-Customer
-↓
-Create Order
-↓
-Order Status = PENDING
-↓
-Create bKash Payment
-↓
-Redirect to bKash
-↓
-Customer Completes Payment
-↓
-bKash Callback
-↓
-Execute Payment
-↓
-Payment Status = PAID
-↓
-Order Status = CONFIRMED
-🗄️ Database
-The project uses:
-PostgreSQL
-Prisma ORM
-Main entities include:
-User
-Category
-Product
-Order
-OrderItem
-Payment
-Relationships and constraints are implemented using Prisma.
-Indexes are added for frequently queried fields such as:
-customerId
-order status
-createdAt
-productId
-orderId
-payment status
-payment gateway
-🔄 Order Status Flow
-Orders follow a controlled status workflow:
-PENDING
-↓
-CONFIRMED
-↓
-PROCESSING
-↓
-SHIPPED
-↓
-DELIVERED
-Cancellation:
-PENDING
-↓
-CANCELLED
-When an order is cancelled, purchased product stock is restored.
-💳 Payment Status
-Available payment statuses:
-PENDING
-PAID
-FAILED
-REFUNDED
-Payment gateway:
-BKASH
-STRIPE
-SSLCOMMERZ
-CASH_ON_DELIVERY
-The current implementation uses:
-bKash Sandbox
-🧪 Testing
-The API can be tested using Postman.
-Recommended testing order:
-Register
-Verify Email
-Login
-Create Category
-Create Product
-Get Products
-Create Order
-Get My Orders
-Create bKash Payment
-Complete bKash Payment
-Verify Payment
-Verify Order Status
-Get My Payments
-Admin Payment Management
-Test Validation
-Test Role Authorization
-📮 Postman
-A Postman collection is included with the project.
-Import the collection into Postman and configure:
-baseUrl
-accessToken
-Example:
-baseUrl = http://localhost:5000/api/v1
-🔒 Security
-The project implements:
-JWT authentication
-HTTP-only cookies
-Password hashing using bcrypt
-Role-based authorization
-Request validation using Zod
-Protected admin/manager/customer routes
-Ownership validation
-Environment variables for sensitive credentials
-🚀 Deployment
-The backend can be deployed to platforms such as:
-Vercel
-Render
-Railway
-Other Node.js compatible hosting platforms
-Make sure the production environment contains all required environment variables.
-👨‍💻 Developer
-Siam Ahmed
-Frontend / Backend Developer
-GitHub: YOUR_GITHUB_PROFILE
-LinkedIn: YOUR_LINKEDIN_PROFILE
+```
