@@ -13,14 +13,17 @@ const createOrder = async (
   payload: ICreateOrderPayload,
   customerId: string,
 ) => {
-  if (!payload.items || payload.items.length === 0) {
+
+  const items = payload.items || (payload as any).orderItems || [];
+
+  if (!items || items.length === 0) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       "Order must contain at least one product!",
     );
   }
 
-  const productIds = payload.items.map((item) => item.productId);
+  const productIds = items.map((item: any) => item.productId);
   const uniqueProductIds = new Set(productIds);
 
   if (productIds.length !== uniqueProductIds.size) {
@@ -35,7 +38,7 @@ const createOrder = async (
 
     const orderItems = [];
 
-    for (const item of payload.items) {
+    for (const item of items) {
       const product = await tx.product.findUnique({
         where: {
           id: item.productId,
@@ -98,7 +101,7 @@ const createOrder = async (
       },
     });
 
-    for (const item of payload.items) {
+    for (const item of items) {
       await tx.product.update({
         where: {
           id: item.productId,

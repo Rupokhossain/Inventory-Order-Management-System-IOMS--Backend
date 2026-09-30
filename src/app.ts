@@ -7,7 +7,6 @@ import express, {
 	type Response,
 } from "express";
 import httpStatus from "http-status";
-import config from "./app/config";
 import { getBkashIdToken } from "./app/lib/bkash";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import { notFound } from "./app/middleware/notFound";
@@ -18,6 +17,7 @@ import { ProductRoutes } from "./app/module/product/product.route";
 import { OrderRoutes } from "./app/module/order/order.route";
 import { PaymentRoutes } from "./app/module/payment/payment.route";
 import { AnalyticsRoutes } from "./app/module/analytics/analytics.route";
+import config from "./app/config/index.js";
 
 
 const app: Application = express();

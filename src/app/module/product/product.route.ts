@@ -22,7 +22,6 @@ router.post(
 // Get All Products
 router.get(
   "/",
-  auth(Role.ADMIN, Role.MANAGER, Role.CUSTOMER),
   ProductController.getAllProducts,
 );
 
@@ -38,7 +37,6 @@ router.get(
 // Get Single Product
 router.get(
   "/:id",
-  auth(Role.ADMIN, Role.MANAGER, Role.CUSTOMER),
   ProductController.getSingleProduct,
 );
 
