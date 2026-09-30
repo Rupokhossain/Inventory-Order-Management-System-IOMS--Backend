@@ -169,28 +169,35 @@ const createBkashPayment = async (orderId: string, customerId: string) => {
 
   const url = `${config.bkash_base_url}/tokenized/checkout/create`;
 
-  const response = await fetch(url, {
-    method: "POST",
+    // bKash Sandbox wallet has balance/limit constraints (max ~20,000 BDT)
+    // If order total exceeds sandbox threshold, use a friendly test amount so transaction completes
+    const isSandbox = config.bkash_base_url?.includes("sandbox");
+    const sandboxAmount = (isSandbox && Number(order.totalAmount) > 20000)
+      ? "150.00"
+      : Number(order.totalAmount).toFixed(2);
 
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
+    const response = await fetch(url, {
+      method: "POST",
 
-      authorization: token,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
 
-      "x-app-key": config.bkash_app_key,
-    },
+        authorization: token,
 
-    body: JSON.stringify({
-      mode: "0011",
-      payerReference: customerId,
-      callbackURL: config.bkash_callback_url,
-      amount: Number(order.totalAmount).toFixed(2),
-      currency: "BDT",
-      intent: "sale",
-      merchantInvoiceNumber,
-    }),
-  });
+        "x-app-key": config.bkash_app_key,
+      },
+
+      body: JSON.stringify({
+        mode: "0011",
+        payerReference: customerId,
+        callbackURL: config.bkash_callback_url,
+        amount: sandboxAmount,
+        currency: "BDT",
+        intent: "sale",
+        merchantInvoiceNumber,
+      }),
+    });
 
   const data = (await response.json()) as IBkashCreatePaymentResponse;
 
@@ -331,17 +338,72 @@ const executeBkashPayment = async (paymentID: string) => {
     return result;
   }
 
-  await prisma.payment.update({
-    where: { id: payment.id },
-    data: {
-      status: "FAILED",
-    },
-  });
+  if (payment.gatewayPaymentId) {
+    await rollbackOrderAndStock(payment.gatewayPaymentId);
+  }
 
   throw new AppError(
     httpStatus.BAD_REQUEST,
     data.statusMessage || "bKash payment failed!",
   );
+};
+
+const rollbackOrderAndStock = async (gatewayPaymentId: string) => {
+  try {
+    const payment = await prisma.payment.findUnique({
+      where: {
+        gatewayPaymentId,
+      },
+      include: {
+        order: {
+          include: {
+            orderItems: true,
+          },
+        },
+      },
+    });
+
+    if (!payment) return null;
+
+    return await prisma.$transaction(async (tx) => {
+      const updatedPayment = await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: "FAILED",
+        },
+      });
+
+      if (
+        payment.order &&
+        payment.order.status !== "CANCELLED" &&
+        payment.order.status !== "CONFIRMED"
+      ) {
+        await tx.order.update({
+          where: { id: payment.order.id },
+          data: {
+            status: "CANCELLED",
+          },
+        });
+
+        // Restore product inventory stock
+        for (const item of payment.order.orderItems) {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: {
+              stockQuantity: {
+                increment: item.quantity,
+              },
+            },
+          });
+        }
+      }
+
+      return updatedPayment;
+    });
+  } catch (error) {
+    console.error("Failed to rollback order and stock:", error);
+    return null;
+  }
 };
 
 const bkashCallback = async (paymentID: string, status: string) => {
@@ -350,23 +412,7 @@ const bkashCallback = async (paymentID: string, status: string) => {
   }
 
   if (status === "cancel") {
-    const payment = await prisma.payment.findUnique({
-      where: {
-        gatewayPaymentId: paymentID,
-      },
-    });
-
-    if (payment) {
-      await prisma.payment.update({
-        where: {
-          id: payment.id,
-        },
-
-        data: {
-          status: "FAILED",
-        },
-      });
-    }
+    await rollbackOrderAndStock(paymentID);
     return {
       success: false,
       message: "Payment cancelled by customer.",
@@ -374,24 +420,7 @@ const bkashCallback = async (paymentID: string, status: string) => {
   }
 
   if (status === "failure") {
-    const payment = await prisma.payment.findUnique({
-      where: {
-        gatewayPaymentId: paymentID,
-      },
-    });
-
-    if (payment) {
-      await prisma.payment.update({
-        where: {
-          id: payment.id,
-        },
-
-        data: {
-          status: "FAILED",
-        },
-      });
-    }
-
+    await rollbackOrderAndStock(paymentID);
     return {
       success: false,
       message: "bKash payment failed.",

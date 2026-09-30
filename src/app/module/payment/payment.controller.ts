@@ -3,6 +3,7 @@ import httpStatus from "http-status";
 import { catchAsync } from "../../utils/catchAsync";
 import { PaymentService } from "./payment.service";
 import { sendResponse } from "../../utils/sendResponse";
+import config from "../../config";
 
 const createBkashPayment = catchAsync(async (req: Request, res: Response) => {
   const { orderId } = req.params;
@@ -38,17 +39,32 @@ const executeBkashPayment = catchAsync(async (req: Request, res: Response) => {
 const bkashCallback = catchAsync(async (req: Request, res: Response) => {
   const { paymentID, status } = req.query;
 
-  const result = await PaymentService.bkashCallback(
-    paymentID as string,
-    status as string,
-  );
+  try {
+    const result = await PaymentService.bkashCallback(
+      paymentID as string,
+      status as string,
+    );
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Payment completed successfully!",
-    data: result,
-  });
+    if (status === "success" && (result as any)?.order) {
+      const orderId = (result as any).order.id;
+      const amount = (result as any).payment?.amount || "";
+      const trxId = (result as any).payment?.transactionId || "";
+      return res.redirect(
+        `${config.frontend_url}/payment/success?orderId=${orderId}&amount=${amount}&method=bkash&trxId=${trxId}`
+      );
+    }
+
+    return res.redirect(
+      `${config.frontend_url}/payment/cancel?status=${status || "cancelled"}`
+    );
+  } catch (err: any) {
+    console.error("bKash Callback Error:", err);
+    return res.redirect(
+      `${config.frontend_url}/payment/cancel?error=${encodeURIComponent(
+        err?.message || "Payment execution failed"
+      )}`
+    );
+  }
 });
 
 const getMyPayments = catchAsync(async (req: Request, res: Response) => {
