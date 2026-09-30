@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
+import { cloudinary } from "../../lib/cloudinary";
 import { AppError } from "../../utils/AppError";
 import { IChangePasswordPayload, IUpdateProfilePayload, IUpdateUserStatusPayload, IUserQuery } from "./user.interface";
 import httpStatus from "http-status"
@@ -48,8 +49,22 @@ const updateMyProfile = async (
 
   const updateData: Record<string, any> = {};
 
-if (payload.name) updateData.name = payload.name;
-if (payload.profileImg) updateData.profileImg = payload.profileImg;
+  if (payload.name) updateData.name = payload.name;
+  if (payload.profileImg) {
+    if (payload.profileImg.startsWith("data:image")) {
+      try {
+        const uploadRes = await cloudinary.uploader.upload(payload.profileImg, {
+          folder: "ioms/users",
+          resource_type: "image",
+        });
+        updateData.profileImg = uploadRes.secure_url;
+      } catch (uploadError) {
+        updateData.profileImg = payload.profileImg;
+      }
+    } else {
+      updateData.profileImg = payload.profileImg;
+    }
+  }
 
 
   const updatedUser = await prisma.user.update({
