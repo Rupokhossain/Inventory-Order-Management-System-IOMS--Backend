@@ -13,8 +13,8 @@ const router = Router();
 router.post(
   "/",
   auth(Role.ADMIN, Role.MANAGER),
-  validateRequest(ProductValidation.createProductValidationSchema),
   upload.single("image"),
+  validateRequest(ProductValidation.createProductValidationSchema),
   ProductController.createProduct,
 );
 

@@ -24,6 +24,8 @@ const createProductValidationSchema = z.object({
 
   categoryId: z
     .uuid("Invalid category ID."),
+
+  imageUrl: z.string().optional(),
 });
 
 const updateProductValidationSchema = z.object({
@@ -55,6 +57,8 @@ const updateProductValidationSchema = z.object({
   categoryId: z
     .uuid("Invalid category ID.")
     .optional(),
+
+  imageUrl: z.string().optional(),
 });
 
 export const ProductValidation = {

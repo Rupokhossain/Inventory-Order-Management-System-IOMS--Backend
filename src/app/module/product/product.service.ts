@@ -83,8 +83,11 @@ const createProduct = async (
 
   if (image) {
     imageUrl = await uploadImageToCloudinary(image);
+  } else if (payload.imageUrl) {
+    imageUrl = payload.imageUrl;
   } else {
-    throw new AppError(httpStatus.BAD_REQUEST, "Product image is required!");
+    imageUrl =
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60";
   }
 
   const product = await prisma.product.create({
