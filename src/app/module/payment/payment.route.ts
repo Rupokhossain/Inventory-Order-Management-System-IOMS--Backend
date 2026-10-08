@@ -14,6 +14,11 @@ router.post(
   PaymentController.createBkashPayment,
 );
 
+router.post(
+  "/simulate/:orderId",
+  auth(Role.CUSTOMER),
+  PaymentController.simulatePayment,
+);
 
 router.post(
   "/bkash/execute",

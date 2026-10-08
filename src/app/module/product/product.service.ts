@@ -119,20 +119,25 @@ const getAllProducts = async (query: IProductQuery) => {
 
   const sortOrder = query.sortOrder ? query.sortOrder : "desc";
 
-  const andConditions: ProductWhereInput[] = [];
+  const andConditions: ProductWhereInput[] = [
+    {
+      isDeleted: false,
+    },
+  ];
 
-  if (query.search) {
+  const search = query.search || query.searchTerm;
+  if (search && search.trim()) {
     andConditions.push({
       OR: [
         {
           name: {
-            contains: query.search,
+            contains: search.trim(),
             mode: "insensitive",
           },
         },
         {
           description: {
-            contains: query.search,
+            contains: search.trim(),
             mode: "insensitive",
           },
         },
@@ -140,10 +145,27 @@ const getAllProducts = async (query: IProductQuery) => {
     });
   }
 
+  const categoryId = query.categoryId || query.category;
+  if (categoryId && categoryId.trim() !== "" && categoryId.toLowerCase() !== "all") {
+    andConditions.push({
+      OR: [
+        {
+          categoryId: categoryId.trim(),
+        },
+        {
+          category: {
+            name: {
+              contains: categoryId.trim(),
+              mode: "insensitive",
+            },
+          },
+        },
+      ],
+    });
+  }
+
   const products = await prisma.product.findMany({
-    where: {
-      AND: andConditions,
-    },
+    where: andConditions.length > 0 ? { AND: andConditions } : {},
     take: limit,
     skip,
 
@@ -157,9 +179,7 @@ const getAllProducts = async (query: IProductQuery) => {
   });
 
   const total = await prisma.product.count({
-    where: {
-      AND: andConditions,
-    },
+    where: andConditions.length > 0 ? { AND: andConditions } : {},
   });
 
   return {

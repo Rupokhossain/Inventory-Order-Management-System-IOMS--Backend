@@ -18,13 +18,11 @@ router.post(
 
 router.get(
   "/",
-  auth(Role.ADMIN, Role.MANAGER, Role.CUSTOMER),
   CategoryController.getAllCategories,
 );
 
 router.get(
   "/:id",
-  auth(Role.ADMIN, Role.MANAGER, Role.CUSTOMER),
   CategoryController.getSingleCategory,
 );
 

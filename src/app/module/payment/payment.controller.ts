@@ -105,6 +105,25 @@ const getSinglePayment = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const simulatePayment = catchAsync(async (req: Request, res: Response) => {
+  const { orderId } = req.params;
+  const { gateway } = req.body || {};
+  const customerId = req.user?.userId;
+
+  const result = await PaymentService.simulatePayment(
+    orderId as string,
+    customerId as string,
+    gateway,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Payment settled and confirmed successfully!",
+    data: result,
+  });
+});
+
 export const PaymentController = {
   createBkashPayment,
   executeBkashPayment,
@@ -113,4 +132,5 @@ export const PaymentController = {
   getMyPayments,
   getAllPayments,
   getSinglePayment,
+  simulatePayment,
 };

@@ -349,18 +349,51 @@ const updateOrderStatus = async (
   }
 
   const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
-    PENDING: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
-    CONFIRMED: [OrderStatus.PROCESSING, OrderStatus.CANCELLED],
-    PROCESSING: [OrderStatus.SHIPPED],
-
-    SHIPPED: [OrderStatus.DELIVERED],
-
-    DELIVERED: [],
-
-    CANCELLED: [],
+    PENDING: [
+      OrderStatus.CONFIRMED,
+      OrderStatus.PROCESSING,
+      OrderStatus.SHIPPED,
+      OrderStatus.DELIVERED,
+      OrderStatus.CANCELLED,
+    ],
+    CONFIRMED: [
+      OrderStatus.PENDING,
+      OrderStatus.PROCESSING,
+      OrderStatus.SHIPPED,
+      OrderStatus.DELIVERED,
+      OrderStatus.CANCELLED,
+    ],
+    PROCESSING: [
+      OrderStatus.PENDING,
+      OrderStatus.CONFIRMED,
+      OrderStatus.SHIPPED,
+      OrderStatus.DELIVERED,
+      OrderStatus.CANCELLED,
+    ],
+    SHIPPED: [
+      OrderStatus.PENDING,
+      OrderStatus.CONFIRMED,
+      OrderStatus.PROCESSING,
+      OrderStatus.DELIVERED,
+      OrderStatus.CANCELLED,
+    ],
+    DELIVERED: [
+      OrderStatus.PENDING,
+      OrderStatus.CONFIRMED,
+      OrderStatus.PROCESSING,
+      OrderStatus.SHIPPED,
+      OrderStatus.CANCELLED,
+    ],
+    CANCELLED: [
+      OrderStatus.PENDING,
+      OrderStatus.CONFIRMED,
+      OrderStatus.PROCESSING,
+      OrderStatus.SHIPPED,
+      OrderStatus.DELIVERED,
+    ],
   };
 
-  const nextStatuses = allowedTransitions[order.status];
+  const nextStatuses = allowedTransitions[order.status] || [];
 
   if (!nextStatuses.includes(newStatus)) {
     throw new AppError(

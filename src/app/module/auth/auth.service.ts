@@ -66,14 +66,15 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
         name: name || "Google User",
         password: hashedPassword,
         role: Role.CUSTOMER,
-        isEmailVerified: true,
+        provider: "GOOGLE",
+        profileImg: googlePayload.picture || undefined,
       },
     });
   } else {
-    if (user?.provider !== "GOOGLE") {
+    if (user.status === "BLOCKED") {
       throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "Please login with your email and password!",
+        httpStatus.FORBIDDEN,
+        "Your account has been blocked by system administrator!",
       );
     }
   }
@@ -155,25 +156,33 @@ const registerUserIntoDB = async (payload: IRegisterUser) => {
     },
   );
 
+  console.log(`\n=========================================`);
+  console.log(`[AUTH] Registration OTP for ${email}: ${otpValue}`);
+  console.log(`=========================================\n`);
+
   // Send OTP email
-  const templatePath = path.join(
-    process.cwd(),
-    "src/app/templates/registration-user-otp.ejs",
-  );
+  try {
+    const templatePath = path.join(
+      process.cwd(),
+      "src/app/templates/registration-user-otp.ejs",
+    );
 
-  const html = await ejs.renderFile(templatePath, {
-    name,
-    email,
-    otp: otpValue,
-    expirationMinutes: expirationSeconds / 60,
-  });
+    const html = await ejs.renderFile(templatePath, {
+      name,
+      email,
+      otp: otpValue,
+      expirationMinutes: expirationSeconds / 60,
+    });
 
-  await transporter.sendMail({
-    from: config.email_sender,
-    to: email,
-    subject: "Email Verification",
-    html,
-  });
+    await transporter.sendMail({
+      from: config.email_sender,
+      to: email,
+      subject: "Email Verification",
+      html,
+    });
+  } catch (emailErr) {
+    console.error(`[AUTH] Failed to send registration email to ${email}:`, emailErr);
+  }
 };
 
 const verifyUserEmail = async (payload: IVerifyEmailPayload) => {
@@ -321,6 +330,7 @@ const loginUser = async (payload: ILoginUser) => {
 
   const jwtPayload = {
     userId: user.id,
+    name: user.name,
     email: user.email,
     role: user.role,
   };
@@ -337,7 +347,10 @@ const loginUser = async (payload: ILoginUser) => {
     config.jwt_refresh_expires_in as SignOptions,
   );
 
+  const { password: _, ...userWithoutPassword } = user;
+
   return {
+    user: userWithoutPassword,
     accessToken,
     refreshToken,
   };
@@ -529,13 +542,89 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
   }
 };
 
+const resendRegistrationOtp = async (payload: { email: string }) => {
+  const email = payload.email.trim().toLowerCase();
+
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (existingUser) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "User is already registered and verified. Please sign in.",
+    );
+  }
+
+  const userRegistrationKey = `ioms-registration-data:${email}`;
+  const redisUserData = await redisClient.get(userRegistrationKey);
+
+  if (!redisUserData) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Registration session expired or not found. Please register again.",
+    );
+  }
+
+  const { name } = JSON.parse(redisUserData);
+
+  const expirationSeconds = 5 * 60;
+  const otpKey = `ioms-registration-otp:${email}`;
+  const otpValue = crypto.randomInt(100000, 1000000).toString();
+
+  await redisClient.set(otpKey, otpValue, {
+    expiration: {
+      type: "EX",
+      value: expirationSeconds,
+    },
+  });
+
+  await redisClient.set(userRegistrationKey, redisUserData, {
+    expiration: {
+      type: "EX",
+      value: expirationSeconds,
+    },
+  });
+
+  console.log(`\n=========================================`);
+  console.log(`[AUTH] Resent Registration OTP for ${email}: ${otpValue}`);
+  console.log(`=========================================\n`);
+
+  try {
+    const templatePath = path.join(
+      process.cwd(),
+      "src/app/templates/registration-user-otp.ejs",
+    );
+
+    const html = await ejs.renderFile(templatePath, {
+      name: name || "User",
+      email,
+      otp: otpValue,
+      expirationMinutes: expirationSeconds / 60,
+    });
+
+    await transporter.sendMail({
+      from: config.email_sender,
+      to: email,
+      subject: "Email Verification - New OTP",
+      html,
+    });
+  } catch (emailErr) {
+    console.error(`[AUTH] Failed to send resend email to ${email}:`, emailErr);
+  }
+
+  return { message: "A new verification code has been sent to your email." };
+};
+
 export const AuthService = {
   googleLogin,
   registerUserIntoDB,
   verifyUserEmail,
+  resendRegistrationOtp,
   loginUser,
   getMe,
   refreshToken,
   forgotPassword,
   resetPassword,
 };
+

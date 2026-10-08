@@ -17,6 +17,7 @@ import { ProductRoutes } from "./app/module/product/product.route";
 import { OrderRoutes } from "./app/module/order/order.route";
 import { PaymentRoutes } from "./app/module/payment/payment.route";
 import { AnalyticsRoutes } from "./app/module/analytics/analytics.route";
+import { InquiryRoutes } from "./app/module/inquiry/inquiry.route";
 import config from "./app/config/index.js";
 
 
@@ -44,6 +45,8 @@ app.use("/api/v1/products", ProductRoutes);
 app.use("/api/v1/orders", OrderRoutes);
 app.use("/api/v1/payments", PaymentRoutes);
 app.use("/api/v1/analytics", AnalyticsRoutes);
+app.use("/api/v1/inquiries", InquiryRoutes);
+
 
 
 

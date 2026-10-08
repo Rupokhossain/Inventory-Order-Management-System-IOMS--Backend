@@ -22,6 +22,9 @@ export interface IUpdateStockPayload {
 
 export interface IProductQuery {
   search?: string;
+  searchTerm?: string;
+  categoryId?: string;
+  category?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
   page?: string;

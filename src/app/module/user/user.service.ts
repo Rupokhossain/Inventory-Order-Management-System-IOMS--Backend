@@ -220,6 +220,43 @@ const updateUserStatus = async (
   return updatedUser;
 };
 
+const updateUserRole = async (
+  userId: string,
+  payload: { role: Role },
+) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      role: payload.role,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+      provider: true,
+      profileImg: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return updatedUser;
+};
+
 
 const changePassword = async(userId: string, payload: IChangePasswordPayload) => {
   const { oldPassword, newPassword } = payload;
@@ -286,5 +323,6 @@ export const UserService = {
   getAllUsers,
   getSingleUser,
   updateUserStatus,
+  updateUserRole,
   changePassword
 };

@@ -604,6 +604,76 @@ const getSinglePayment = async (paymentId: string, user: RequestUser) => {
   return payment;
 };
 
+const simulatePayment = async (
+  orderId: string,
+  customerId: string,
+  gateway: string = "BKASH",
+) => {
+  const order = await prisma.order.findFirst({
+    where: {
+      id: orderId,
+      customerId,
+    },
+    include: {
+      payment: true,
+      customer: true,
+    },
+  });
+
+  if (!order) {
+    throw new AppError(httpStatus.NOT_FOUND, "Order not found!");
+  }
+
+  if (order.status === "CONFIRMED" || (order.payment && order.payment.status === "PAID")) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This order has already been paid and confirmed!",
+    );
+  }
+
+  const validGateway = gateway === "CASH_ON_DELIVERY" ? "CASH_ON_DELIVERY" : "BKASH";
+  const trxId = `${validGateway}_${Date.now().toString().slice(-6)}_${Math.random()
+    .toString(36)
+    .substring(2, 6)
+    .toUpperCase()}`;
+
+  const result = await prisma.$transaction(async (tx) => {
+    let payment;
+    if (order.payment) {
+      payment = await tx.payment.update({
+        where: { id: order.payment.id },
+        data: {
+          status: "PAID",
+          transactionId: trxId,
+          paymentGateway: validGateway as any,
+          amount: order.totalAmount,
+        },
+      });
+    } else {
+      payment = await tx.payment.create({
+        data: {
+          orderId: order.id,
+          amount: order.totalAmount,
+          paymentGateway: validGateway as any,
+          status: "PAID",
+          transactionId: trxId,
+        },
+      });
+    }
+
+    const updatedOrder = await tx.order.update({
+      where: { id: order.id },
+      data: {
+        status: "CONFIRMED",
+      },
+    });
+
+    return { payment, order: updatedOrder };
+  });
+
+  return result;
+};
+
 export const PaymentService = {
   getBkashToken,
   createBkashPayment,
@@ -612,4 +682,5 @@ export const PaymentService = {
   getMyPayments,
   getAllPayments,
   getSinglePayment,
+  simulatePayment,
 };

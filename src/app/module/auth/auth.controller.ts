@@ -96,6 +96,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: "User logged in successfully",
     data: {
+      user: result.user,
       accessToken,
       refreshToken,
     },
@@ -177,11 +178,23 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const resendRegistrationOtp = catchAsync(async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const result = await AuthService.resendRegistrationOtp({ email });
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: result.message,
+    data: null,
+  });
+});
 
 export const AuthController = {
   googleLogin,
- registerUser,
- verifyUserEmail,
+  registerUser,
+  verifyUserEmail,
+  resendRegistrationOtp,
   loginUser,
   getMe,
   refreshToken,

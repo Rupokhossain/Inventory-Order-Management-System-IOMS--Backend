@@ -97,11 +97,30 @@ const changePassword = catchAsync(
   },
 );
 
+const updateUserRole = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const result = await UserService.updateUserRole(
+      id as string,
+      req.body,
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User role updated successfully!",
+      data: result,
+    });
+  },
+);
+
 export const UserController = {
   getMyProfile,
   updateMyProfile,
   getAllUsers,
   getSingleUser,
   updateUserStatus,
-  changePassword
+  updateUserRole,
+  changePassword,
 };

@@ -48,4 +48,10 @@ router.patch(
   UserController.updateUserStatus,
 );
 
+router.patch(
+  "/:id/role",
+  auth(Role.ADMIN),
+  UserController.updateUserRole,
+);
+
 export const UserRoutes = router;

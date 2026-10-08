@@ -11,6 +11,7 @@ router.post("/google-login", AuthController.googleLogin);
 router.post("/register", validateRequest(AuthValidation.registerValidationSchema), AuthController.registerUser);
 
 router.post("/verify-email", validateRequest(AuthValidation.verifyEmailValidationSchema), AuthController.verifyUserEmail);
+router.post("/resend-registration-otp", AuthController.resendRegistrationOtp);
 
 router.post("/login", validateRequest(AuthValidation.loginValidationSchema), AuthController.loginUser);
 
